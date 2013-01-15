@@ -1,5 +1,9 @@
 test
 edited 
 h
+<<<<<<< HEAD
 
 I was here MMC
+
+Chance
+>>>>>>> a99ba8ede73763edb087d558e0aa9907c17e2a61
