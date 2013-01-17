@@ -20,11 +20,12 @@ int DIRM1_2 = 0; //2A
 int DIRM2_1 = 0; //3A
 int DIRM2_2 = 0; //4A
 void setup() {
-  Serial.begin(9600);
+  //Serial.begin(9600);
+  
   //Setup Motor 1
   pinMode(3, OUTPUT);//EN1,2
   pinMode(4, OUTPUT);//1A
-  pinMode(2,OUTPUT);//2A
+  pinMode(2, OUTPUT);//2A
 
   //Setup Motor 2
   pinMode(6, OUTPUT);//EN3,4
@@ -37,15 +38,17 @@ void setup() {
 }
 
 void loop(){
-
- 
-  M1SPEED=0;
-  M2SPEED=0;
   UDR = analogRead(A5);
   UDL = analogRead(A2);
   
-   Serial.print("UD = ");
-  Serial.print(UDR, DEC);
+  //Serial.print("UD = ");
+  //Serial.print(UDR, DEC);
+  //delay(300);
+  
+  ///*
+  M1SPEED=0;
+  M2SPEED=0;
+    
   if(UDR > 521)
   {
      UDR = UDR-521;
@@ -58,6 +61,7 @@ void loop(){
     DIRM1_2 = HIGH;
     M1SPEED = map(UDR, 0,521, 255, 0);
   }
+  
   if(UDL > 521)
   {
      UDL = UDL-521;
@@ -71,52 +75,14 @@ void loop(){
     M2SPEED = map(UDL, 0,521, 255, 0);
   }
   
- 
-//  Serial.print(", LR = ");
-//  Serial.println(LR, DEC); 
-
-
-  
   //Motor A forward @ full speed
-  digitalWrite(4, LOW);//DIRM1_1); //Establishes forward direction of Channel A
-  digitalWrite(2, HIGH);//DIRM1_2);   //Disengage the Brake for Channel A
-  analogWrite(3, 255);   //Spins the motor on Channel A at full speed
+  digitalWrite(4, DIRM1_1); //Establishes forward direction of Channel A
+  digitalWrite(2, DIRM1_2);   //Disengage the Brake for Channel A
+  analogWrite(3, M1SPEED);   //Spins the motor on Channel A at full speed
 
   //Motor B backward @ half speed
   digitalWrite(7, DIRM2_1);  //Establishes backward direction of Channel B
   digitalWrite(8, DIRM2_2);   //Disengage the Brake for Channel B
-  analogWrite(6, 255);    //Spins the motor on Channel B at half speed
-
- 
-  //delay(3000);
-
-  
-//  digitalWrite(9, HIGH);  //Engage the Brake for Channel A
-//  digitalWrite(9, HIGH);  //Engage the Brake for Channel B
-
-
-//  delay(1000);
-  
-  
-  //Motor A forward @ full speed
-//  digitalWrite(12, LOW);  //Establishes backward direction of Channel A
-//  digitalWrite(9, LOW);   //Disengage the Brake for Channel A
-//  analogWrite(3, 123);    //Spins the motor on Channel A at half speed
-  
-  //Motor B forward @ full speed
-//  digitalWrite(13, HIGH); //Establishes forward direction of Channel B
-//  digitalWrite(8, LOW);   //Disengage the Brake for Channel B
-//  analogWrite(11, 255);   //Spins the motor on Channel B at full speed
-  
-  
-//  delay(3000);
-  
-  
-//  digitalWrite(9, HIGH);  //Engage the Brake for Channel A
-//  digitalWrite(9, HIGH);  //Engage the Brake for Channel B
-  
-  
-//  delay(1000);
-  
+  analogWrite(6, M2SPEED);    //Spins the motor on Channel B at half speed
+//*/
 }
-
