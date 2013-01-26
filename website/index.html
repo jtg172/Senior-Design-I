@@ -2,18 +2,63 @@
 
 <html lang="en">
     <head>
-        <!--CSS code-->
+             <!--CSS code-->
         <style type="text/css">
-         body {
-           color:white;
+	 .header{
+	 background-color:black;
+	 border-style:outset;
+	 border-width:5px;
+	 border-color:white;
+	 }
+        body {
+           	color:white;
 	       font: bold large cursive;
-           text-align:center;
+          	text-align:center;
 	       background-color:#800000;
-      /*   border-style:double;
-           border-width:5px;
-           border-color: #000;*/
-         } 
-         
+		padding: 5px 5px 5px 5px;
+         }
+	  table,th,td{
+		border:3px solid black;
+		background-color:grey;
+		width:50%;
+		margin-left:25%;
+		margin-right:25%;
+		margin-top:30pt;
+		margin-bottom:40pt;
+		padding: 4px;
+		table-layout:fixed;
+	  }
+	  ul
+	  {
+		float:center;
+		width:80%;
+		margin-right:10%;
+		margin-left:10%;
+		padding-top:0px;
+		margin-bottom:100px;
+		list-style-type:none;
+		background-color:white;
+		border-style:outset;
+		border-width:5px;
+		border-color:maroon;
+		
+	   }
+	   li {display:inline-block;
+	   	font-size:30px;
+		padding: 10px;
+		margin-top: 10px;
+	   }
+	   a
+	   {	
+		float:center;
+		width:6em;
+		text-decoration:underline;
+		color:maroon;
+		padding:0;
+	    }
+	    h1{
+	    color:maroon;
+	    }
       </style>
         <meta charset="utf-8" />
         <title>Home Page</title>
@@ -22,7 +67,13 @@
     <!--Beginning CSS For Body-->
    <!-- <div class="bodyStyle">-->
         <!--Title-->
-        <h1>Seamate Senior Design Home Page</h1>
+        <div class="header">
+        <h1>MSU Seamate Team</h1>
+	 <ul>
+		    <li class="current_page_item"><a href="index.html">Home Page</a></li>
+		    <li><a target="_top" href="Deliverables.html">Deliverables</a></li><br/><br/> 
+	 </ul>
+     	 </div>
         <!--Team Information-->
          <font size="5" > Team Leader:<br/> <font/>
          <font size="4" > Mark McConnell <br/><br/><font/>
@@ -32,9 +83,6 @@
                           Robbie Lundine <br/> <br/> <font/>
          <font size="5" >   Advisor:<br/> </font >
          <a  href="http://www.ece.msstate.edu/people/profile.php?janem"><font color="black">Jane Moorehead</font></a><br/><br/>
-         <h2>Team Information</h2> 
-         <!--Link to Seamate Website<font color="black"></font> -->
-         <a  href="Documents.html"><font color="black">Documents</font></a><br/><br/>
          <a href="http://www.marinetech.org/rov-competition-2/-"><img src="SeamateImage.png"></a>
          
          </body>
