@@ -6,83 +6,95 @@ For more information see:
 http://www.instructables.com/id/Arduino-Motor-Shield-Tutorial/
 
 *************************************************************/
-int LRR = 0;
-int UDR = 0;
-int LRL = 0;
-int UDL = 0;
+//Define ports
 
-int M1SPEED=0; //EN1,2
-int M2SPEED=0; //EN3,4
+int M1_1 = 2;
+int M1_2 = 3;
+int M2_1 = 4;
+int M2_2 = 5;
 
-int DIRM1_1 = 0; //1A
-int DIRM1_2 = 0; //2A
+char CL_UD = A0;
+char CL_RL = A1;
 
-int DIRM2_1 = 0; //3A
-int DIRM2_2 = 0; //4A
+char CR_UD = A2;
+char CR_RL = A3;
+
 void setup() {
-  //Serial.begin(9600);
+//  Serial.begin(9600);
   
   //Setup Motor 1
-  pinMode(3, OUTPUT);//EN1,2
-  pinMode(4, OUTPUT);//1A
-  pinMode(2, OUTPUT);//2A
+  pinMode(M1_1, OUTPUT);
+  pinMode(M1_2, OUTPUT);
 
   //Setup Motor 2
-  pinMode(6, OUTPUT);//EN3,4
-  pinMode(7, OUTPUT);//3A
-  pinMode(8, OUTPUT);//4A
+  pinMode(M2_1, OUTPUT);
+  pinMode(M2_2, OUTPUT);
   
   //Setup Controller
-  pinMode(A5, INPUT);
-  pinMode(A2, INPUT);
+  pinMode(CL_UD, INPUT);
+  pinMode(CR_UD, INPUT);
 }
 
 void loop(){
-  UDR = analogRead(A5);
-  UDL = analogRead(A2);
   
-  //Serial.print("UD = ");
-  //Serial.print(UDR, DEC);
-  //delay(300);
+  int M1_1_S, M1_2_S, M2_1_S, M2_2_S;
+  int CL_UD_S, CR_UD_S;
   
-  ///*
-  M1SPEED=0;
-  M2SPEED=0;
+  M1_1_S = M1_2_S = M2_1_S = M2_2_S = 0;
+  
+  CL_UD_S = analogRead(CL_UD);
+  CR_UD_S = analogRead(CR_UD);
+  
+  /*
+  Serial.print("CR_UD_S = ");
+  Serial.print(CR_UD_S, DEC);
+  delay(300);
+ 
+  Serial.print(", CL_UD_S = ");
+  Serial.print(CL_UD_S, DEC);
+  delay(1000);
+  */
     
-  if(UDR > 521)
+ if(CR_UD_S > 521)
   {
-     UDR = UDR-521;
-     DIRM1_1 = HIGH;
-     DIRM1_2 = LOW;
-     M1SPEED= map(UDR, 0,502, 0, 255) ;
-  } else if(UDR <521)
+     CR_UD_S = CR_UD_S - 521;
+     M1_1_S = map(CR_UD_S, 0, 502, 0, 255) ;
+     M1_2_S = LOW;
+  } 
+  else if(CR_UD_S <= 521)
   {
-    DIRM1_1 = LOW;
-    DIRM1_2 = HIGH;
-    M1SPEED = map(UDR, 0,521, 255, 0);
+    M1_1_S = LOW;
+    M1_2_S = map(CR_UD_S, 0, 521, 255, 0);
   }
   
-  if(UDL > 521)
+  if(CL_UD_S > 521)
   {
-     UDL = UDL-521;
-     DIRM2_1 = HIGH;
-     DIRM2_2 = LOW;
-     M2SPEED= map(UDL, 0,502, 0, 255) ;
-  } else if(UDL <521)
+    CL_UD_S = CL_UD_S - 521;
+    M2_1_S = map(CL_UD_S, 0, 502, 0, 255);
+    M2_2_S = LOW;
+  } 
+  else if(CL_UD_S <= 521)
   {
-    DIRM2_1 = LOW;
-    DIRM2_2 = HIGH;
-    M2SPEED = map(UDL, 0,521, 255, 0);
+    M2_1_S = LOW;
+    M2_2_S = map(CL_UD_S, 0, 521, 255, 0);
   }
   
-  //Motor A forward @ full speed
-  digitalWrite(4, DIRM1_1); //Establishes forward direction of Channel A
-  digitalWrite(2, DIRM1_2);   //Disengage the Brake for Channel A
-  analogWrite(3, M1SPEED);   //Spins the motor on Channel A at full speed
+  /*
+  //Set Motor 1 
+  analogWrite(M1_1, M1_1_S); //Establishes forward direction of Channel A
+  analogWrite(M1_2, M1_2_S);   //Disengage the Brake for Channel A
 
-  //Motor B backward @ half speed
-  digitalWrite(7, DIRM2_1);  //Establishes backward direction of Channel B
-  digitalWrite(8, DIRM2_2);   //Disengage the Brake for Channel B
-  analogWrite(6, M2SPEED);    //Spins the motor on Channel B at half speed
-//*/
+  //Set Motor 2
+  analogWrite(M2_1, M2_1_S);  //Establishes backward direction of Channel B
+  analogWrite(M2_2, M2_2_S);   //Disengage the Brake for Channel B
+  */
+  
+  //Set Motor 1 test
+  analogWrite(3, 0); //Establishes forward direction of Channel A
+  analogWrite(4, 0);   //Disengage the Brake for Channel A
+
+  //Set Motor 2 test
+  analogWrite(5, 200);  //Establishes backward direction of Channel B
+  analogWrite(6, 0);   //Disengage the Brake for Channel B
+
 }
