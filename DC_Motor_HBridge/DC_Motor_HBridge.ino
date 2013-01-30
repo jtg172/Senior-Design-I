@@ -41,6 +41,7 @@ void loop(){
   int CL_UD_S, CR_UD_S;
   
   M1_1_S = M1_2_S = M2_1_S = M2_2_S = 0;
+  CL_UD_S = CR_UD_S = 0;
   
   CL_UD_S = analogRead(CL_UD);
   CR_UD_S = analogRead(CR_UD);
@@ -54,7 +55,7 @@ void loop(){
   Serial.print(CL_UD_S, DEC);
   delay(1000);
   */
-    
+   
  if(CR_UD_S > 521)
   {
      CR_UD_S = CR_UD_S - 521;
@@ -78,8 +79,8 @@ void loop(){
     M2_1_S = LOW;
     M2_2_S = map(CL_UD_S, 0, 521, 255, 0);
   }
-  
-  /*
+ 
+
   //Set Motor 1 
   analogWrite(M1_1, M1_1_S); //Establishes forward direction of Channel A
   analogWrite(M1_2, M1_2_S);   //Disengage the Brake for Channel A
@@ -87,14 +88,14 @@ void loop(){
   //Set Motor 2
   analogWrite(M2_1, M2_1_S);  //Establishes backward direction of Channel B
   analogWrite(M2_2, M2_2_S);   //Disengage the Brake for Channel B
-  */
-  
+
+  /*
   //Set Motor 1 test
-  analogWrite(3, 0); //Establishes forward direction of Channel A
-  analogWrite(4, 0);   //Disengage the Brake for Channel A
-
+  analogWrite(2, 0); //Establishes forward direction of Channel A
+  analogWrite(3, 200);   //Disengage the Brake for Channel A
+  
   //Set Motor 2 test
-  analogWrite(5, 200);  //Establishes backward direction of Channel B
-  analogWrite(6, 0);   //Disengage the Brake for Channel B
-
+  analogWrite(4, 0);  //Establishes backward direction of Channel B
+  analogWrite(5, 200);   //Disengage the Brake for Channel B
+*/
 }
