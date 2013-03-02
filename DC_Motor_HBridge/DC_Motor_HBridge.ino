@@ -22,6 +22,8 @@ int M4_1 = 8; //front left bottom2
 int M4_2 = 9; 
 int M5_1 = 10; //front right bottom3
 int M5_2 = 11; 
+int M6_1 = 12; //front right bottom3
+int M6_2 = 13;
 
 int test;
 int XboxConnected;
@@ -29,15 +31,15 @@ int XboxConnected;
 void setup() {
   Serial.begin(9600);
 
-  if (Usb.Init() == -1) {
-    Serial.print(F("\r\nOSC did not start"));
-    XboxConnected = LOW;
-  }
-  else {
-    Serial.print(F("\r\nXBOX USB Library Started"));
-    Xbox.setLedMode(ALTERNATING);
-    XboxConnected = HIGH;
-  }
+//  if (Usb.Init() == -1) {
+//    Serial.print(F("\r\nOSC did not start"));
+//    XboxConnected = LOW;
+//  }
+//  else {
+//    Serial.print(F("\r\nXBOX USB Library Started"));
+//    Xbox.setLedMode(ALTERNATING);
+//    XboxConnected = HIGH;
+//  }
   
   //Setup Motor 1
   pinMode(M1_1, OUTPUT);
@@ -59,6 +61,9 @@ void setup() {
   pinMode(M5_1, OUTPUT);
   pinMode(M5_2, OUTPUT);
   
+  //Setup Motor 6
+  pinMode(M6_1, OUTPUT);
+  pinMode(M6_2, OUTPUT);
   //TCCR0B=0x02;
   //TCCR2B=0x02;
   
@@ -66,7 +71,7 @@ void setup() {
 }
 
 void loop(){
-  int M1_1_S, M1_2_S, M2_1_S, M2_2_S, M3_1_S, M3_2_S, M4_1_S, M4_2_S, M5_1_S, M5_2_S;
+  int M1_1_S, M1_2_S, M2_1_S, M2_2_S, M3_1_S, M3_2_S, M4_1_S, M4_2_S, M5_1_S, M5_2_S, M6_1_S, M6_2_S;
   int CR_RL_S, CR_UD_S, CL_UD_S, CL_RL_S, LT_S, RT_S;
   
   M1_1_S = M1_2_S = M2_1_S = M2_2_S = M3_1_S = M3_2_S = M4_1_S = M4_2_S = M5_1_S = M5_2_S = 0;
@@ -161,15 +166,13 @@ void loop(){
   
   if(LT_S > 0)
   {
-     M3_1_S = M4_1_S = M5_1_S = LOW;
-     M3_2_S = LT_S;
-     M4_2_S = M5_2_S = ( LT_S/2 );
+     M3_1_S = M4_1_S = M5_1_S = M6_1_S = LOW;
+     M3_2_S = M4_2_S = M5_2_S = M6_2_S = LT_S;
   }
   else if (RT_S > 0)
   {
-     M3_1_S = RT_S;
-     M4_1_S = M5_1_S = ( RT_S/2 );
-     M3_2_S = M4_2_S = M5_2_S = LOW;
+     M3_1_S = M4_1_S = M5_1_S = M6_1_S = RT_S;
+     M3_2_S = M4_2_S = M5_2_S = M6_2_S = LOW;
   }
   
     
@@ -180,7 +183,7 @@ void loop(){
   //Serial.print("LT_S=");
   //Serial.print(LT_S, DEC);
   //delay(300);
-  ///*
+  
   if ( test == 10000 )
   {  
     test=0;
@@ -203,6 +206,12 @@ void loop(){
     Serial.print(", M2_2_S=");
     Serial.print(M2_2_S, DEC);
     Serial.print("\n\n\n");
+    
+     Serial.print("M6_1_S=");
+    Serial.print(M6_1_S, DEC);
+    Serial.print(", M6_2_S=");
+    Serial.print(M6_2_S, DEC);
+    Serial.print("\n\n\n");
   }
   test=test+1;
   
@@ -221,13 +230,17 @@ void loop(){
   analogWrite(M3_1, M3_1_S);
   analogWrite(M3_2, M3_2_S);
   
-  //Set Motor 2
+  //Set Motor 4
   analogWrite(M4_1, M4_1_S);
   analogWrite(M4_2, M4_2_S);
   
-  //Set Motor 2
+  //Set Motor 5
   analogWrite(M5_1, M5_1_S);
   analogWrite(M5_2, M5_2_S);
+  
+  //Set Motor 6
+  analogWrite(M6_1, M6_1_S);
+  analogWrite(M6_2, M6_2_S);
 //*/
   /*
   //Set Motor 1 test
