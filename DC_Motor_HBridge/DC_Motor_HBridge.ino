@@ -12,29 +12,33 @@ USB Usb;
 XBOXUSB Xbox(&Usb);
 
 //Define ports
-int M1_1 = 2; //back left
-int M1_2 = 3; 
-int M2_1 = 4; //back right
-int M2_2 = 5; 
-int M3_1 = 6; //bottom1
+int M1_1 = 3; //back left
+int M1_2 = 2; 
+int M2_1 = 5; //back right
+int M2_2 = 4;  
+int M3_1 = 6; //back bottom1
 int M3_2 = 7; 
-int M4_1 = 8; //bottom2
+int M4_1 = 8; //front left bottom2
 int M4_2 = 9; 
-int M5_1 = 10; //bottom3
+int M5_1 = 10; //front right bottom3
 int M5_2 = 11; 
 
 int test;
+int XboxConnected;
 
 void setup() {
   Serial.begin(9600);
-//  Serial.begin(115200);
 
   if (Usb.Init() == -1) {
     Serial.print(F("\r\nOSC did not start"));
-    while(1); //halt
-  }  
-  Serial.print(F("\r\nXBOX USB Library Started"));
-
+    XboxConnected = LOW;
+  }
+  else {
+    Serial.print(F("\r\nXBOX USB Library Started"));
+    Xbox.setLedMode(ALTERNATING);
+    XboxConnected = HIGH;
+  }
+  
   //Setup Motor 1
   pinMode(M1_1, OUTPUT);
   pinMode(M1_2, OUTPUT);
@@ -55,8 +59,6 @@ void setup() {
   pinMode(M5_1, OUTPUT);
   pinMode(M5_2, OUTPUT);
   
-  Xbox.setLedMode(ALTERNATING);
-   //Usb.Task();
   //TCCR0B=0x02;
   //TCCR2B=0x02;
   
@@ -64,21 +66,25 @@ void setup() {
 }
 
 void loop(){
-  Usb.Task();
-  
   int M1_1_S, M1_2_S, M2_1_S, M2_2_S, M3_1_S, M3_2_S, M4_1_S, M4_2_S, M5_1_S, M5_2_S;
   int CR_RL_S, CR_UD_S, CL_UD_S, CL_RL_S, LT_S, RT_S;
   
   M1_1_S = M1_2_S = M2_1_S = M2_2_S = M3_1_S = M3_2_S = M4_1_S = M4_2_S = M5_1_S = M5_2_S = 0;
   CR_RL_S = CR_UD_S = CL_UD_S = CL_RL_S = LT_S = RT_S = 0;
   
-  CR_UD_S = Xbox.getAnalogHat(RightHatY);
-  CR_RL_S = Xbox.getAnalogHat(RightHatX);
-  CL_UD_S = Xbox.getAnalogHat(LeftHatY);
-//  CL_RL_S = Xbox.getAnalogHat(LeftHatX); //not used 
+  if (XboxConnected) {
+    Usb.Task();
+    
+    CR_UD_S = Xbox.getAnalogHat(RightHatY);
+    CR_RL_S = Xbox.getAnalogHat(RightHatX);
+    CL_UD_S = Xbox.getAnalogHat(LeftHatY);
+    //CL_RL_S = Xbox.getAnalogHat(LeftHatX); //not used
+    
+    LT_S = Xbox.getButton(L2);
+    RT_S = Xbox.getButton(R2);
+  }
   
-  LT_S = Xbox.getButton(L2);
-  RT_S = Xbox.getButton(R2);
+
   
   /***********************start of new controls*****************************//*
   if( CR_UD_S > 15983 )
@@ -121,11 +127,11 @@ void loop(){
   
   
      
-  /***********************start of test controls*****************************/    
+  /***********************start of test controls*****************************/
   if(CL_UD_S > 800)
   {
      // M1 FORWARD
-     M1_1_S = map(CL_UD_S, 801, 32768, 0, 250);
+     M1_1_S = map(CL_UD_S, 801, 32768, 0, 255);
      M1_2_S = LOW;
 
   } 
@@ -133,13 +139,13 @@ void loop(){
   {
      //M1 REVERSE
      M1_1_S = LOW;
-     M1_2_S = map(CL_UD_S, -801, -32769, 0, 250);
+     M1_2_S = map(CL_UD_S, -801, -32769, 0, 255);
   }
 
   if(CR_UD_S > 800)
   {
      // M2 FORWARD
-     M2_1_S = map(CR_UD_S, 801, 32768, 0, 250);
+     M2_1_S = map(CR_UD_S, 801, 32768, 0, 255);
      M2_2_S = LOW;
 
   } 
@@ -147,7 +153,7 @@ void loop(){
   {
      //M2 REVERSE
      M2_1_S = LOW;
-     M2_2_S = map(CR_UD_S, -801, -32769, 0, 250);
+     M2_2_S = map(CR_UD_S, -801, -32769, 0, 255);
   }
 
   /***********************finish of test controls*****************************/
@@ -156,11 +162,13 @@ void loop(){
   if(LT_S > 0)
   {
      M3_1_S = M4_1_S = M5_1_S = LOW;
-     M3_2_S = M4_2_S = M5_2_S = LT_S;
+     M3_2_S = LT_S;
+     M4_2_S = M5_2_S = ( LT_S/2 );
   }
   else if (RT_S > 0)
   {
-     M3_1_S = M4_1_S = M5_1_S = RT_S;
+     M3_1_S = RT_S;
+     M4_1_S = M5_1_S = ( RT_S/2 );
      M3_2_S = M4_2_S = M5_2_S = LOW;
   }
   
@@ -200,7 +208,7 @@ void loop(){
   
   //delay(3000);
   //*/
-
+///*
   //Set Motor 1 
   analogWrite(M1_1, M1_1_S);
   analogWrite(M1_2, M1_2_S);
@@ -220,14 +228,14 @@ void loop(){
   //Set Motor 2
   analogWrite(M5_1, M5_1_S);
   analogWrite(M5_2, M5_2_S);
-
+//*/
   /*
   //Set Motor 1 test
-  analogWrite(2, 0); //Establishes forward direction of Channel A
+  analogWrite(2, 200); //Establishes forward direction of Channel A
   analogWrite(3, 200);   //Disengage the Brake for Channel A
   
   //Set Motor 2 test
-  analogWrite(4, 0);  //Establishes backward direction of Channel B
+  analogWrite(4, 200);  //Establishes backward direction of Channel B
   analogWrite(5, 200);   //Disengage the Brake for Channel B
 */
 }
