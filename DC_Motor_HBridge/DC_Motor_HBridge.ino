@@ -12,17 +12,17 @@ USB Usb;
 XBOXUSB Xbox(&Usb);
 
 //Define ports
-int M1_1 = 3; //back left
-int M1_2 = 2; 
-int M2_1 = 5; //back right
-int M2_2 = 4;  
-int M3_1 = 6; //back bottom1
-int M3_2 = 7; 
-int M4_1 = 8; //front left bottom2
+int M1_1 = 2; //back left
+int M1_2 = 3; 
+int M2_1 = 4; //back right
+int M2_2 = 5;  
+int M3_1 = 7; //back left bottom1
+int M3_2 = 6; 
+int M4_1 = 8; //back right bottom2
 int M4_2 = 9; 
-int M5_1 = 10; //front right bottom3
+int M5_1 = 10; //front left bottom3
 int M5_2 = 11; 
-int M6_1 = 12; //front right bottom3
+int M6_1 = 12; //front right bottom4
 int M6_2 = 13;
 
 int test;
@@ -31,15 +31,15 @@ int XboxConnected;
 void setup() {
   Serial.begin(9600);
 
-//  if (Usb.Init() == -1) {
-//    Serial.print(F("\r\nOSC did not start"));
-//    XboxConnected = LOW;
-//  }
-//  else {
-//    Serial.print(F("\r\nXBOX USB Library Started"));
-//    Xbox.setLedMode(ALTERNATING);
-//    XboxConnected = HIGH;
-//  }
+  if (Usb.Init() == -1) {
+    Serial.print(F("\r\nOSC did not start"));
+    XboxConnected = LOW;
+  }
+  else {
+    Serial.print(F("\r\nXBOX USB Library Started"));
+    Xbox.setLedMode(ALTERNATING);
+    XboxConnected = HIGH;
+  }
   
   //Setup Motor 1
   pinMode(M1_1, OUTPUT);
@@ -74,14 +74,14 @@ void loop(){
   int M1_1_S, M1_2_S, M2_1_S, M2_2_S, M3_1_S, M3_2_S, M4_1_S, M4_2_S, M5_1_S, M5_2_S, M6_1_S, M6_2_S;
   int CR_RL_S, CR_UD_S, CL_UD_S, CL_RL_S, LT_S, RT_S;
   
-  M1_1_S = M1_2_S = M2_1_S = M2_2_S = M3_1_S = M3_2_S = M4_1_S = M4_2_S = M5_1_S = M5_2_S = 0;
+  M1_1_S = M1_2_S = M2_1_S = M2_2_S = M3_1_S = M3_2_S = M4_1_S = M4_2_S = M5_1_S = M5_2_S = M6_1_S = M6_2_S = 0;
   CR_RL_S = CR_UD_S = CL_UD_S = CL_RL_S = LT_S = RT_S = 0;
   
   if (XboxConnected) {
     Usb.Task();
     
     CR_UD_S = Xbox.getAnalogHat(RightHatY);
-    CR_RL_S = Xbox.getAnalogHat(RightHatX);
+    //CR_RL_S = Xbox.getAnalogHat(RightHatX);
     CL_UD_S = Xbox.getAnalogHat(LeftHatY);
     //CL_RL_S = Xbox.getAnalogHat(LeftHatX); //not used
     
@@ -205,9 +205,9 @@ void loop(){
     Serial.print(M2_1_S, DEC);
     Serial.print(", M2_2_S=");
     Serial.print(M2_2_S, DEC);
-    Serial.print("\n\n\n");
+    Serial.print("\n\n");
     
-     Serial.print("M6_1_S=");
+    Serial.print("M6_1_S=");
     Serial.print(M6_1_S, DEC);
     Serial.print(", M6_2_S=");
     Serial.print(M6_2_S, DEC);
