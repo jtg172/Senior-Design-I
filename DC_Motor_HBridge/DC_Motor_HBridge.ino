@@ -12,12 +12,12 @@ USB Usb;
 XBOXUSB Xbox(&Usb);
 
 //Define ports
-int M1_1 = 2; //back left
-int M1_2 = 3; 
-int M2_1 = 4; //back right
-int M2_2 = 5;  
-int M3_1 = 7; //back left bottom1
-int M3_2 = 6; 
+int M1_1 = 5; //back left  //5
+int M1_2 = 4; //4
+int M2_1 = 3; //back right  //3
+int M2_2 = 2;  //2
+int M3_1 = 6; //back left bottom1
+int M3_2 = 7; 
 int M4_1 = 8; //back right bottom2
 int M4_2 = 9; 
 int M5_1 = 10; //front left bottom3
@@ -27,6 +27,7 @@ int M6_2 = 13;
 
 int test;
 int XboxConnected;
+int dir;
 
 void setup() {
   Serial.begin(9600);
@@ -64,10 +65,12 @@ void setup() {
   //Setup Motor 6
   pinMode(M6_1, OUTPUT);
   pinMode(M6_2, OUTPUT);
+  
   //TCCR0B=0x02;
   //TCCR2B=0x02;
   
   test = 0;
+  
 }
 
 void loop(){
@@ -80,8 +83,8 @@ void loop(){
   if (XboxConnected) {
     Usb.Task();
     
-    CR_UD_S = Xbox.getAnalogHat(RightHatY);
-    //CR_RL_S = Xbox.getAnalogHat(RightHatX);
+    //CR_UD_S = Xbox.getAnalogHat(RightHatY);
+    CR_RL_S = Xbox.getAnalogHat(RightHatX);
     CL_UD_S = Xbox.getAnalogHat(LeftHatY);
     //CL_RL_S = Xbox.getAnalogHat(LeftHatX); //not used
     
@@ -91,16 +94,80 @@ void loop(){
   
 
   
-  /***********************start of new controls*****************************//*
-  if( CR_UD_S > 15983 )
-  {
-      // M1 FROWARD, M2 FORWARD
-     M1_1_S = M2_1_S = map(CR_UD_S, 801, 32767, 0, 255);
+  /***********************start of new controls*****************************/
+
+dir = 0;
+if (CL_UD_S > 800)
+{
+     // M1 FROWARD, M2 FORWARD
+     M1_1_S = M2_1_S = map(CL_UD_S, 801, 32767, 0, 255);
      M1_2_S = M2_2_S = LOW;
-  }
+     dir = 2;
+}
+else if (CL_UD_S < -800)
+{
+    // M1 REVERSE, M2 REVERSE
+     M1_1_S = M2_1_S = LOW;
+     M1_2_S = M2_2_S = map(CL_UD_S, -801, -32768, 0, 255);
+     dir = 1;
+}
+
+if (CR_RL_S > 800)
+{
+      if (f==2) //both forward
+      {
+          M2_1_S = M2_1_S - map(CR_RL_S, 801, 32767, 0, 255);
+          if (M2_1_S < 0)
+          {
+              M2_2_S = abs(M2_1_S);
+              M2_1_S = LOW;
+              M1_1_S = M1_1_S + M2_2_S;
+          }
+      }
+      else if (f==1) //both reverse
+      {
+          M1_2_S = M1_2_S - map(CR_RL_S, 801, 32767, 0, 255);
+          if (M1_2_S < 0)
+          {
+              M1_1_S = abs(M1_2_S);
+              M1_2_S = LOW;
+              M2_2_S = M2_2_S + M1_1_S;
+          }
+      }
+      else
+      {
+          M1_1_S = M2_2_S = map(CR_RL_S, 801, 32767, 0, 255);
+      }
+}
+else if (CR_RL_S < -800)
+{
+      if (f==2) //both forward
+      {
+          M1_1_S = M1_1_S - map(CR_RL_S, -801, -32768, 0, 255);
+          if (M1_1_S < 0)
+          {
+              M1_2_S = abs(M1_1_S);
+              M1_1_S = LOW;
+              M2_1_S = M2_1_S + M1_2_S;
+          }
+      }
+      else if (f==1) //both reverse
+      {
+          M2_2_S = M2_2_S - map(CR_RL_S, -801, -32768, 0, 255);
+          if (M2_2_S < 0)
+          {
+              M2_1_S = abs(M2_2_S);
+              M2_2_S = LOW;
+              M1_2_S = M1_2_S + M2_1_S;
+          }
+      }
+      else
+      {
+          M2_1_S = M1_2_S = map(CR_RL_S, -801, -32767, 0, 255);
+      }
+}
    
   /***********************finish of new controls***********************************/
-  
   /***********************start of old controls*****************************//*  
   if(CR_UD_S > 800)
   {
@@ -129,10 +196,7 @@ void loop(){
      M1_2_S = M2_1_S = LOW;
   }
   /***********************finish of old controls*****************************/
-  
-  
-     
-  /***********************start of test controls*****************************/
+  /***********************start of test controls*****************************//*
   if(CL_UD_S > 800)
   {
      // M1 FORWARD
@@ -160,7 +224,6 @@ void loop(){
      M2_1_S = LOW;
      M2_2_S = map(CR_UD_S, -801, -32769, 0, 255);
   }
-
   /***********************finish of test controls*****************************/
   
   
@@ -184,21 +247,21 @@ void loop(){
   //Serial.print(LT_S, DEC);
   //delay(300);
   
-  if ( test == 10000 )
+  if ( test == 4000 )
   {  
     test=0;
     Serial.print("CL_UD_S=");
     Serial.print(CL_UD_S, DEC);
     Serial.print("\n");
     
+    Serial.print("CR_RL_S=");
+    Serial.print(CR_RL_S, DEC);
+    Serial.print("\n");
+    
     Serial.print("M1_1_S=");
     Serial.print(M1_1_S, DEC);
     Serial.print(", M1_2_S=");
     Serial.print(M1_2_S, DEC);
-    Serial.print("\n\n");
-    
-    Serial.print("CR_UD_S=");
-    Serial.print(CR_UD_S, DEC);
     Serial.print("\n");
     
     Serial.print("M2_1_S=");
@@ -207,11 +270,11 @@ void loop(){
     Serial.print(M2_2_S, DEC);
     Serial.print("\n\n");
     
-    Serial.print("M6_1_S=");
-    Serial.print(M6_1_S, DEC);
-    Serial.print(", M6_2_S=");
-    Serial.print(M6_2_S, DEC);
-    Serial.print("\n\n\n");
+//    Serial.print("M6_1_S=");
+//    Serial.print(M6_1_S, DEC);
+//    Serial.print(", M6_2_S=");
+//    Serial.print(M6_2_S, DEC);
+//    Serial.print("\n\n\n");
   }
   test=test+1;
   
