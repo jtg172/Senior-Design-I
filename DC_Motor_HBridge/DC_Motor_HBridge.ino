@@ -116,17 +116,17 @@ void loop(){\
   dir = 0;
   if (CL_UD_S > 800)
   {
-     // M1 FROWARD, M2 FORWARD
-     M1_1_S = M2_1_S = map(CL_UD_S, 801, 32767, 0, 255);
-     M1_2_S = M2_2_S = LOW;
-     dir = 2;
-  }
-  else if (CL_UD_S < -800)
-  {
     // M1 REVERSE, M2 REVERSE
      M1_1_S = M2_1_S = LOW;
      M1_2_S = M2_2_S = map(CL_UD_S, -801, -32768, 0, 255);
      dir = 1;
+  }
+  else if (CL_UD_S < -800)
+  {
+     // M1 FROWARD, M2 FORWARD
+     M1_1_S = M2_1_S = map(CL_UD_S, 801, 32767, 0, 255);
+     M1_2_S = M2_2_S = LOW;
+     dir = 2;
   }
 
   if (CR_RL_S > 800)
@@ -246,52 +246,52 @@ void loop(){\
   
   if(LT_S > 0)
   {
-    //goes DOWN
-     M3_1_S = M4_1_S = M5_1_S = M6_1_S = LOW;
-     M3_2_S = M4_2_S = M5_2_S = M6_2_S = LT_S;
+    //goes UP
+     M3_1_S = M4_1_S = M5_1_S = M6_1_S = LT_S;
+     M3_2_S = M4_2_S = M5_2_S = M6_2_S = LOW;
   }
   else if (RT_S > 0)
   {
-    //goes UP
-     M3_1_S = M4_1_S = M5_1_S = M6_1_S = RT_S;
-     M3_2_S = M4_2_S = M5_2_S = M6_2_S = LOW;
+    //goes DOWN
+     M3_1_S = M4_1_S = M5_1_S = M6_1_S = LOW;
+     M3_2_S = M4_2_S = M5_2_S = M6_2_S = RT_S;
   }
   else
   {
      //get z value
   }
 
-  if(XPIN_S < 511)
-  {
-    //3 and 5 go down
-      //M3_1_S = M5_1_S = LOW;
-      map(XPIN_S, 400, 512, 0, 255);
-      M3_2_S = M3_2_S + map(XPIN_S, 511, 400, 0, 255);
-      M5_2_S = M5_2_S + map(XPIN_S, 511, 400, 0, 255);
-  } 
-  else if (XPIN_S > 512)
-  {
-     // 4 AND 6 go down
-      //M4_1_S = M6_1_S = LOW;
-      M4_2_S = M4_2_S + map(XPIN_S, 512, 625, 0, 255);
-      M6_2_S = M6_2_S + map(XPIN_S, 512, 625, 0, 255);
-  }
-  
-  if (YPIN_S < 511)
-  {
-      //3 AND 4 go down
-      //M3_1_S = M4_1_S = LOW;
-      M3_2_S = M3_2_S + map(YPIN_S, 511, 400, 0, 255);
-      M4_2_S = M4_2_S + map(YPIN_S, 511, 400, 0, 255);    
-  }
-  else if (YPIN_S > 512)
-  {
-     //5 and 6 go down
-      //M5_1_S = M6_1_S = LOW;
-      M5_2_S = M5_2_S + map(YPIN_S, 512, 625, 0, 255);
-      M6_2_S = M6_2_S + map(YPIN_S, 512, 625, 0, 255);   
-  }
-  
+//  if(XPIN_S < 511)
+//  {
+//    //3 and 5 go down
+//      //M3_1_S = M5_1_S = LOW;
+//      map(XPIN_S, 400, 512, 0, 255);
+//      M3_2_S = M3_2_S + map(XPIN_S, 511, 400, 0, 255);
+//      M5_2_S = M5_2_S + map(XPIN_S, 511, 400, 0, 255);
+//  } 
+//  else if (XPIN_S > 512)
+//  {
+//     // 4 AND 6 go down
+//      //M4_1_S = M6_1_S = LOW;
+//      M4_2_S = M4_2_S + map(XPIN_S, 512, 625, 0, 255);
+//      M6_2_S = M6_2_S + map(XPIN_S, 512, 625, 0, 255);
+//  }
+//  
+//  if (YPIN_S < 511)
+//  {
+//      //3 AND 4 go down
+//      //M3_1_S = M4_1_S = LOW;
+//      M3_2_S = M3_2_S + map(YPIN_S, 511, 400, 0, 255);
+//      M4_2_S = M4_2_S + map(YPIN_S, 511, 400, 0, 255);    
+//  }
+//  else if (YPIN_S > 512)
+//  {
+//     //5 and 6 go down
+//      //M5_1_S = M6_1_S = LOW;
+//      M5_2_S = M5_2_S + map(YPIN_S, 512, 625, 0, 255);
+//      M6_2_S = M6_2_S + map(YPIN_S, 512, 625, 0, 255);   
+//  }
+//  
   /***************************END ACCELEROMETER*****************************/    
  
  
