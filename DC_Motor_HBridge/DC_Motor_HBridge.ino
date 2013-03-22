@@ -33,6 +33,12 @@ int test;
 int XboxConnected;
 int dir;
 
+const int XPIN_L = 344;
+const int YPIN_L = 337;
+const int ZPIN_L = 300;//?
+const int PIN_R = 75;
+
+
 void setup() {
   Serial.begin(9600);
 
@@ -246,52 +252,69 @@ void loop(){\
   
   if(LT_S > 0)
   {
-    //goes UP
+    //goes DOWN
      M3_1_S = M4_1_S = M5_1_S = M6_1_S = LT_S;
      M3_2_S = M4_2_S = M5_2_S = M6_2_S = LOW;
   }
   else if (RT_S > 0)
   {
-    //goes DOWN
+    //goes UP //FORWARD
      M3_1_S = M4_1_S = M5_1_S = M6_1_S = LOW;
      M3_2_S = M4_2_S = M5_2_S = M6_2_S = RT_S;
   }
   else
   {
-     //get z value
+     //60 REVERSE 255 FORWARD WITH CRATE ON FRONT
+     if( ZPIN_S < (ZPIN_L-1) )
+     {
+       //ROV SINKING, MOTORS FORWARD/UP
+       M3_1_S = M4_1_S = M5_1_S = M6_1_S = LOW;
+       M3_2_S = M4_2_S = M5_2_S = M6_2_S = map(ZPIN_S, ZPIN_L, (ZPIN_L-100), 0, 255);
+     }
+     else if( ZPIN_S > (ZPIN_L+1) )
+     {
+       //ROV RISING, MOTORS REVERSE/DOWN
+       M3_1_S = M4_1_S = M5_1_S = M6_1_S = map(ZPIN_S, ZPIN_L, (ZPIN_L+100), 0, 255);
+       M3_2_S = M4_2_S = M5_2_S = M6_2_S = LOW;
+     }
   }
 
-//  if(XPIN_S < 511)
-//  {
-//    //3 and 5 go down
-//      //M3_1_S = M5_1_S = LOW;
-//      map(XPIN_S, 400, 512, 0, 255);
-//      M3_2_S = M3_2_S + map(XPIN_S, 511, 400, 0, 255);
-//      M5_2_S = M5_2_S + map(XPIN_S, 511, 400, 0, 255);
-//  } 
-//  else if (XPIN_S > 512)
-//  {
-//     // 4 AND 6 go down
-//      //M4_1_S = M6_1_S = LOW;
-//      M4_2_S = M4_2_S + map(XPIN_S, 512, 625, 0, 255);
-//      M6_2_S = M6_2_S + map(XPIN_S, 512, 625, 0, 255);
-//  }
-//  
-//  if (YPIN_S < 511)
-//  {
-//      //3 AND 4 go down
-//      //M3_1_S = M4_1_S = LOW;
-//      M3_2_S = M3_2_S + map(YPIN_S, 511, 400, 0, 255);
-//      M4_2_S = M4_2_S + map(YPIN_S, 511, 400, 0, 255);    
-//  }
-//  else if (YPIN_S > 512)
-//  {
-//     //5 and 6 go down
-//      //M5_1_S = M6_1_S = LOW;
-//      M5_2_S = M5_2_S + map(YPIN_S, 512, 625, 0, 255);
-//      M6_2_S = M6_2_S + map(YPIN_S, 512, 625, 0, 255);   
-//  }
-//  
+  
+  if(XPIN_S < (XPIN_L-1))
+  {
+    //6 and 5 go down
+      //M3_1_S = M5_1_S = LOW;
+      //map(XPIN_S, 400, 512, 0, 255);
+      M6_1_S = M6_1_S + map(XPIN_S, XPIN_L, (XPIN_L-PIN_R), 0, 255);
+      M5_1_S = M5_1_S + map(XPIN_S, XPIN_L, (XPIN_L-PIN_R), 0, 255);
+  } 
+  else if (XPIN_S > (XPIN_L+1) )
+  {
+     // 4 AND 3 go down
+      //M4_1_S = M6_1_S = LOW;
+      M4_1_S = M4_1_S + map(XPIN_S, XPIN_L, (XPIN_L+PIN_R), 0, 255);
+      M3_1_S = M3_1_S + map(XPIN_S, XPIN_L, (XPIN_L+PIN_R), 0, 255);
+  }
+  
+  if (YPIN_S < (YPIN_L-1) )
+  {
+      //3 AND 5 go down
+      //M3_1_S = M4_1_S = LOW;
+      M3_1_S = M3_1_S + map(YPIN_S, YPIN_L, (YPIN_L-PIN_R), 0, 255);
+      M5_1_S = M4_1_S + map(YPIN_S, YPIN_L, (YPIN_L-PIN_R), 0, 255);    
+  }
+  else if (YPIN_S > (YPIN_L+1) )
+  {
+     //4 and 6 go down
+      //M5_1_S = M6_1_S = LOW;
+      M4_1_S = M4_1_S + map(YPIN_S, YPIN_L, (YPIN_L+PIN_R), 0, 255); //4 DOWN
+      M6_1_S = M6_1_S + map(YPIN_S, YPIN_L, (YPIN_L+PIN_R), 0, 255);  //6 DOWN
+      if (M4_1_S > 255)
+      {
+          
+      }
+  }
+  
   /***************************END ACCELEROMETER*****************************/    
  
  
