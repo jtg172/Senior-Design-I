@@ -32,6 +32,7 @@ const int zpin = A10;
 int test;
 int XboxConnected;
 int dir;
+int temp;
 
 const int XPIN_L = 344;
 const int YPIN_L = 337;
@@ -250,69 +251,130 @@ void loop(){\
   
   /************************start of accelerometer controls********************/
   
-  if(LT_S > 0)
-  {
-    //goes DOWN
-     M3_1_S = M4_1_S = M5_1_S = M6_1_S = LT_S;
-     M3_2_S = M4_2_S = M5_2_S = M6_2_S = LOW;
-  }
-  else if (RT_S > 0)
-  {
-    //goes UP //FORWARD
-     M3_1_S = M4_1_S = M5_1_S = M6_1_S = LOW;
-     M3_2_S = M4_2_S = M5_2_S = M6_2_S = RT_S;
-  }
-  else
-  {
-     //60 REVERSE 255 FORWARD WITH CRATE ON FRONT
-     if( ZPIN_S < (ZPIN_L-1) )
-     {
-       //ROV SINKING, MOTORS FORWARD/UP
-       M3_1_S = M4_1_S = M5_1_S = M6_1_S = LOW;
-       M3_2_S = M4_2_S = M5_2_S = M6_2_S = map(ZPIN_S, ZPIN_L, (ZPIN_L-100), 0, 255);
-     }
-     else if( ZPIN_S > (ZPIN_L+1) )
-     {
-       //ROV RISING, MOTORS REVERSE/DOWN
-       M3_1_S = M4_1_S = M5_1_S = M6_1_S = map(ZPIN_S, ZPIN_L, (ZPIN_L+100), 0, 255);
-       M3_2_S = M4_2_S = M5_2_S = M6_2_S = LOW;
-     }
-  }
-
-  
+  temp=0
   if(XPIN_S < (XPIN_L-1))
   {
-    //6 and 5 go down
-      //M3_1_S = M5_1_S = LOW;
-      //map(XPIN_S, 400, 512, 0, 255);
-      M6_1_S = M6_1_S + map(XPIN_S, XPIN_L, (XPIN_L-PIN_R), 0, 255);
-      M5_1_S = M5_1_S + map(XPIN_S, XPIN_L, (XPIN_L-PIN_R), 0, 255);
+      temp=0;
+      M6_1_S = M5_1_S = map(XPIN_S, XPIN_L, (XPIN_L-PIN_R), 0, 255) / 2; //6 and 5 go down
+      M3_2_S = M4_2_S = map(XPIN_S, XPIN_L, (XPIN_L-PIN_R), 0, 255) / 2; //3 and 4 go up
   } 
   else if (XPIN_S > (XPIN_L+1) )
   {
-     // 4 AND 3 go down
-      //M4_1_S = M6_1_S = LOW;
-      M4_1_S = M4_1_S + map(XPIN_S, XPIN_L, (XPIN_L+PIN_R), 0, 255);
-      M3_1_S = M3_1_S + map(XPIN_S, XPIN_L, (XPIN_L+PIN_R), 0, 255);
+      temp=1;
+      M6_2_S = M5_2_S = map(XPIN_S, XPIN_L, (XPIN_L-PIN_R), 0, 255) / 2; //6 and 5 go up
+      M3_1_S = M4_1_S = map(XPIN_S, XPIN_L, (XPIN_L-PIN_R), 0, 255) / 2; //3 and 4 go down
   }
   
-  if (YPIN_S < (YPIN_L-1) )
+//  if (YPIN_S < (YPIN_L-1) )
+//  {
+//      //3 AND 5 go down
+//      //M3_1_S = M4_1_S = LOW;
+//      M3_1_S = M3_1_S + map(YPIN_S, YPIN_L, (YPIN_L-PIN_R), 0, 255);
+//      M5_1_S = M4_1_S + map(YPIN_S, YPIN_L, (YPIN_L-PIN_R), 0, 255);    
+//  }
+//  else if (YPIN_S > (YPIN_L+1) )
+//  {
+//     //4 and 6 go down
+//      //M5_1_S = M6_1_S = LOW;
+//      M4_1_S = M4_1_S + map(YPIN_S, YPIN_L, (YPIN_L+PIN_R), 0, 255); //4 DOWN
+//      M6_1_S = M6_1_S + map(YPIN_S, YPIN_L, (YPIN_L+PIN_R), 0, 255);  //6 DOWN
+//      if (M4_1_S > 255)
+//      {
+//          
+//      }
+//  }  
+
+
+  if( ZPIN_S < (ZPIN_L-1) )
+     {
+       //ROV SINKING, MOTORS FORWARD/UP?
+       RT_S = map(ZPIN_S, ZPIN_L, (ZPIN_L-100), 0, 255);
+     }
+     else if( ZPIN_S > (ZPIN_L+1) )
+     {
+       //ROV RISING, MOTORS REVERSE/DOWN?
+       LT_S = map(ZPIN_S, ZPIN_L, (ZPIN_L+100), 0, 255);
+     }
+  
+  if(LT_S > 0)
   {
-      //3 AND 5 go down
-      //M3_1_S = M4_1_S = LOW;
-      M3_1_S = M3_1_S + map(YPIN_S, YPIN_L, (YPIN_L-PIN_R), 0, 255);
-      M5_1_S = M4_1_S + map(YPIN_S, YPIN_L, (YPIN_L-PIN_R), 0, 255);    
+    //goes DOWN
+    if(!temp)
+    {
+         M6_1_S = M6_1_S + map(LT_S, 0, 255, 0, (255 - M6_1_S);
+         M5_1_S = M5_1_S + map(LT_S, 0, 255, 0, (255 - M5_1_S);
+         
+         M4_2_S = M4_2_S - map(LT_S, 0, 255, 0, (255 - M6_1_S);
+         if (M4_2_S < 0)
+         {
+            M4_1_S = abs(M4_2_S);
+            M4_2_S = LOW; 
+         }
+         M3_2_S = M3_2_S - map(LT_S, 0, 255, 0, (255 - M5_1_S);
+         if (M3_2_S < 0)
+         {
+            M3_1_S = abs(M3_2_S);
+            M3_2_S = LOW; 
+         }
+    }
+    else
+    {
+         M4_1_S = M4_1_S + map(LT_S, 0, 255, 0, (255 - M4_1_S);
+         M3_1_S = M3_1_S + map(LT_S, 0, 255, 0, (255 - M3_1_S);
+         
+         M6_2_S = M6_2_S - map(LT_S, 0, 255, 0, (255 - M4_1_S);
+         if (M6_2_S < 0)
+         {
+            M6_1_S = abs(M6_2_S);
+            M6_2_S = LOW; 
+         }
+         M5_2_S = M5_2_S - map(LT_S, 0, 255, 0, (255 - M3_1_S);
+         if (M5_2_S < 0)
+         {
+            M5_1_S = abs(M5_2_S);
+            M5_2_S = LOW; 
+         }
+    }
   }
-  else if (YPIN_S > (YPIN_L+1) )
+  else if (RT_S > 0)
   {
-     //4 and 6 go down
-      //M5_1_S = M6_1_S = LOW;
-      M4_1_S = M4_1_S + map(YPIN_S, YPIN_L, (YPIN_L+PIN_R), 0, 255); //4 DOWN
-      M6_1_S = M6_1_S + map(YPIN_S, YPIN_L, (YPIN_L+PIN_R), 0, 255);  //6 DOWN
-      if (M4_1_S > 255)
-      {
-          
-      }
+    //goes UP
+    if(!temp)
+    {
+         M4_2_S = M4_2_S + map(LT_S, 0, 255, 0, (255 - M4_2_S);
+         M3_2_S = M3_2_S + map(LT_S, 0, 255, 0, (255 - M3_2_S);
+         
+         M6_1_S = M6_1_S - map(LT_S, 0, 255, 0, (255 - M4_2_S);
+         if (M6_1_S < 0)
+         {
+            M6_2_S = abs(M6_1_S);
+            M6_1_S = LOW; 
+         }
+         M5_1_S = M5_1_S - map(LT_S, 0, 255, 0, (255 - M3_2_S);
+         if (M5_1_S < 0)
+         {
+            M5_2_S = abs(M5_1_S);
+            M5_1_S = LOW; 
+         }
+    }
+    else
+    {
+         M6_2_S = M6_2_S + map(LT_S, 0, 255, 0, (255 - M6_2_S);
+         M5_2_S = M5_2_S + map(LT_S, 0, 255, 0, (255 - M5_2_S);
+         
+         M4_1_S = M4_1_S - map(LT_S, 0, 255, 0, (255 - M6_2_S);
+         if (M4_1_S < 0)
+         {
+            M4_2_S = abs(M4_1_S);
+            M4_1_S = LOW; 
+         }
+         M3_1_S = M3_1_S - map(LT_S, 0, 255, 0, (255 - M5_2_S);
+         if (M3_1_S < 0)
+         {
+            M3_2_S = abs(M3_1_S);
+            M3_1_S = LOW; 
+         }  
+    }
   }
   
   /***************************END ACCELEROMETER*****************************/    
