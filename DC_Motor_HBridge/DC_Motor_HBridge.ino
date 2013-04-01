@@ -89,7 +89,7 @@ void setup() {
   
 }
 
-void loop(){\
+void loop(){
   // initialize motors
   int M1_1_S, M1_2_S, M2_1_S, M2_2_S, M3_1_S, M3_2_S, M4_1_S, M4_2_S, M5_1_S, M5_2_S, M6_1_S, M6_2_S;
   M1_1_S = M1_2_S = M2_1_S = M2_2_S = M3_1_S = M3_2_S = M4_1_S = M4_2_S = M5_1_S = M5_2_S = M6_1_S = M6_2_S = 0;
@@ -251,7 +251,7 @@ void loop(){\
   
   /************************start of accelerometer controls********************/
   
-  temp=0
+  temp=0;
   if(XPIN_S < (XPIN_L-1))
   {
       temp=0;
@@ -301,16 +301,16 @@ void loop(){\
     //goes DOWN
     if(!temp)
     {
-         M6_1_S = M6_1_S + map(LT_S, 0, 255, 0, (255 - M6_1_S);
-         M5_1_S = M5_1_S + map(LT_S, 0, 255, 0, (255 - M5_1_S);
+         M6_1_S = M6_1_S + map(LT_S, 0, 255, 0, (255 - M6_1_S));
+         M5_1_S = M5_1_S + map(LT_S, 0, 255, 0, (255 - M5_1_S));
          
-         M4_2_S = M4_2_S - map(LT_S, 0, 255, 0, (255 - M6_1_S);
+         M4_2_S = M4_2_S - map(LT_S, 0, 255, 0, (255 - M6_1_S));
          if (M4_2_S < 0)
          {
             M4_1_S = abs(M4_2_S);
             M4_2_S = LOW; 
          }
-         M3_2_S = M3_2_S - map(LT_S, 0, 255, 0, (255 - M5_1_S);
+         M3_2_S = M3_2_S - map(LT_S, 0, 255, 0, (255 - M5_1_S));
          if (M3_2_S < 0)
          {
             M3_1_S = abs(M3_2_S);
@@ -319,16 +319,16 @@ void loop(){\
     }
     else
     {
-         M4_1_S = M4_1_S + map(LT_S, 0, 255, 0, (255 - M4_1_S);
-         M3_1_S = M3_1_S + map(LT_S, 0, 255, 0, (255 - M3_1_S);
+         M4_1_S = M4_1_S + map(LT_S, 0, 255, 0, (255 - M4_1_S));
+         M3_1_S = M3_1_S + map(LT_S, 0, 255, 0, (255 - M3_1_S));
          
-         M6_2_S = M6_2_S - map(LT_S, 0, 255, 0, (255 - M4_1_S);
+         M6_2_S = M6_2_S - map(LT_S, 0, 255, 0, (255 - M4_1_S));
          if (M6_2_S < 0)
          {
             M6_1_S = abs(M6_2_S);
             M6_2_S = LOW; 
          }
-         M5_2_S = M5_2_S - map(LT_S, 0, 255, 0, (255 - M3_1_S);
+         M5_2_S = M5_2_S - map(LT_S, 0, 255, 0, (255 - M3_1_S));
          if (M5_2_S < 0)
          {
             M5_1_S = abs(M5_2_S);
@@ -341,16 +341,16 @@ void loop(){\
     //goes UP
     if(!temp)
     {
-         M4_2_S = M4_2_S + map(LT_S, 0, 255, 0, (255 - M4_2_S);
-         M3_2_S = M3_2_S + map(LT_S, 0, 255, 0, (255 - M3_2_S);
+         M4_2_S = M4_2_S + map(LT_S, 0, 255, 0, (255 - M4_2_S));
+         M3_2_S = M3_2_S + map(LT_S, 0, 255, 0, (255 - M3_2_S));
          
-         M6_1_S = M6_1_S - map(LT_S, 0, 255, 0, (255 - M4_2_S);
+         M6_1_S = M6_1_S - map(LT_S, 0, 255, 0, (255 - M4_2_S));
          if (M6_1_S < 0)
          {
             M6_2_S = abs(M6_1_S);
             M6_1_S = LOW; 
          }
-         M5_1_S = M5_1_S - map(LT_S, 0, 255, 0, (255 - M3_2_S);
+         M5_1_S = M5_1_S - map(LT_S, 0, 255, 0, (255 - M3_2_S));
          if (M5_1_S < 0)
          {
             M5_2_S = abs(M5_1_S);
@@ -359,16 +359,16 @@ void loop(){\
     }
     else
     {
-         M6_2_S = M6_2_S + map(LT_S, 0, 255, 0, (255 - M6_2_S);
-         M5_2_S = M5_2_S + map(LT_S, 0, 255, 0, (255 - M5_2_S);
+         M6_2_S = M6_2_S + map(LT_S, 0, 255, 0, (255 - M6_2_S));
+         M5_2_S = M5_2_S + map(LT_S, 0, 255, 0, (255 - M5_2_S));
          
-         M4_1_S = M4_1_S - map(LT_S, 0, 255, 0, (255 - M6_2_S);
+         M4_1_S = M4_1_S - map(LT_S, 0, 255, 0, (255 - M6_2_S));
          if (M4_1_S < 0)
          {
             M4_2_S = abs(M4_1_S);
             M4_1_S = LOW; 
          }
-         M3_1_S = M3_1_S - map(LT_S, 0, 255, 0, (255 - M5_2_S);
+         M3_1_S = M3_1_S - map(LT_S, 0, 255, 0, (255 - M5_2_S));
          if (M3_1_S < 0)
          {
             M3_2_S = abs(M3_1_S);
