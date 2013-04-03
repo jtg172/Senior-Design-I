@@ -8,16 +8,19 @@ Justin Gilmer
 //Including Xbox USB libraries
 
 #include <XBOXUSB.h>
+#include <usbhub.h>
 USB Usb;
+USBHub Hub1(&Usb);
+USBHub Hub2(&Usb);
 XBOXUSB Xbox(&Usb);
 
 //Define ports
-const int M1_1 = 5; //back left  //5
-const int M1_2 = 4; //4
-const int M2_1 = 3; //back right  //3
-const int M2_2 = 2;  //2
-const int M3_1 = 6; //back left bottom1
-const int M3_2 = 7; 
+const int M1_1 = 7; //back left  //5
+const int M1_2 = 6; //4
+const int M2_1 = 4; //back right  //3
+const int M2_2 = 5;  //2
+const int M3_1 = 2; //back left bottom1
+const int M3_2 = 3; 
 const int M4_1 = 8; //back right bottom2
 const int M4_2 = 9; 
 const int M5_1 = 10; //front left bottom3
@@ -34,16 +37,16 @@ int XboxConnected;
 int dir;
 int temp;
 
-const int XPIN_L = 344;
-const int YPIN_L = 337;
-const int ZPIN_L = 300;//?
+const int XPIN_L = 550;
+const int YPIN_L = 422;
+const int ZPIN_L = 376;//?
 const int PIN_R = 75;
 
 
 void setup() {
   Serial.begin(9600);
-
-  if (Usb.Init() == -1) {
+  
+ if (Usb.Init() == -1) {
     Serial.print(F("\r\nOSC did not start"));
     XboxConnected = LOW;
   }
@@ -125,13 +128,13 @@ void loop(){
   {
     // M1 REVERSE, M2 REVERSE
      M1_1_S = M2_1_S = LOW;
-     M1_2_S = M2_2_S = map(CL_UD_S, -801, -32768, 0, 255);
+     M1_2_S = M2_2_S = map(CL_UD_S, 801, 32767, 0, 255);
      dir = 1;
   }
   else if (CL_UD_S < -800)
   {
      // M1 FROWARD, M2 FORWARD
-     M1_1_S = M2_1_S = map(CL_UD_S, 801, 32767, 0, 255);
+     M1_1_S = M2_1_S = map(CL_UD_S, -801, -32768, 0, 255);
      M1_2_S = M2_2_S = LOW;
      dir = 2;
   }
@@ -250,6 +253,17 @@ void loop(){
   /***********************finish of test controls*****************************/
   
   /************************start of accelerometer controls********************/
+/* if(LT_S > 0)
+  {
+     M3_1_S = M4_1_S = M5_1_S = M6_1_S = LOW;
+     M3_2_S = M4_2_S = M5_2_S = M6_2_S = LT_S;
+  }
+  else if (RT_S > 0)
+  {
+     M3_1_S = M4_1_S = M5_1_S = M6_1_S = RT_S;
+     M3_2_S = M4_2_S = M5_2_S = M6_2_S = LOW;
+  }*/
+ 
   
   temp=0;
   if(XPIN_S < (XPIN_L-1))
@@ -413,6 +427,26 @@ void loop(){
      Serial.print(M4_2_S, DEC);
      Serial.print("\n\n");
      
+     Serial.print("CL_UD_S=");
+    Serial.print(CL_UD_S, DEC);
+    Serial.print("\n");
+    
+    Serial.print("CR_RL_S=");
+    Serial.print(CR_RL_S, DEC);
+    Serial.print("\n");
+     
+    Serial.print("M1_1_S=");
+    Serial.print(M1_1_S, DEC);
+    Serial.print(", M1_2_S=");
+    Serial.print(M1_2_S, DEC);
+    Serial.print("\n");
+    
+    Serial.print("M2_1_S=");
+    Serial.print(M2_1_S, DEC);
+    Serial.print(", M2_2_S=");
+    Serial.print(M2_2_S, DEC);
+    Serial.print("\n\n");
+     
      test = 0; 
   }
   test= test+1;
@@ -455,7 +489,7 @@ void loop(){
   
   //delay(3000);
   */
-///*
+
   //Set Motor 1 
   analogWrite(M1_1, M1_1_S);
   analogWrite(M1_2, M1_2_S);
@@ -479,14 +513,30 @@ void loop(){
   //Set Motor 6
   analogWrite(M6_1, M6_1_S);
   analogWrite(M6_2, M6_2_S);
-//*/
+
   /*
   //Set Motor 1 test
-  analogWrite(2, 200); //Establishes forward direction of Channel A
-  analogWrite(3, 200);   //Disengage the Brake for Channel A
+//  analogWrite(M1_1, 100); //Establishes forward direction of Channel A
+//  analogWrite(M1_2, 0);   //Disengage the Brake for Channel A
   
   //Set Motor 2 test
-  analogWrite(4, 200);  //Establishes backward direction of Channel B
-  analogWrite(5, 200);   //Disengage the Brake for Channel B
+  analogWrite(2, 200);  //Establishes backward direction of Channel B
+  analogWrite(3, 0);   //Disengage the Brake for Channel B
+  
+  //Set Motor 1 test
+//  analogWrite(M3_1, 100); //Establishes forward direction of Channel A
+//  analogWrite(M3_2, 0);   //Disengage the Brake for Channel A
+  
+    //Set Motor 1 test
+//  analogWrite(M4_1, 100); //Establishes forward direction of Channel A
+//  analogWrite(M4_2, 0);   //Disengage the Brake for Channel A
+  
+    //Set Motor 1 test
+//  analogWrite(M5_1, 100); //Establishes forward direction of Channel A
+//  analogWrite(M5_2, 0);   //Disengage the Brake for Channel A
+  
+    //Set Motor 1 test
+//  analogWrite(M6_1, 100); //Establishes forward direction of Channel A
+//  analogWrite(M6_2, 0);   //Disengage the Brake for Channel A
 */
 }
