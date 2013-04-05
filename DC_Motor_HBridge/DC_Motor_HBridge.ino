@@ -23,24 +23,29 @@ const int M3_1 = 2; //back left bottom1
 const int M3_2 = 3; 
 const int M4_1 = 8; //back right bottom2
 const int M4_2 = 9; 
-const int M5_1 = 10; //front left bottom3
-const int M5_2 = 11; 
+const int M5_1 = 14; //front left bottom3
+const int M5_2 = 15; 
 const int M6_1 = 12; //front right bottom4
 const int M6_2 = 13;
 
-const int xpin = A8;
-const int ypin = A9;
-const int zpin = A10;
+const char xpin = A8;
+const char ypin = A9;
+const char zpin = A10;
 
 int test;
 int XboxConnected;
 int dir;
 int temp;
+int mapped;
 
-const int XPIN_L = 550;
-const int YPIN_L = 422;
-const int ZPIN_L = 376;//?
-const int PIN_R = 75;
+const float XPIN_L = 537;//568
+const float YPIN_L = 410;
+const float ZPIN_L = 365;
+const float PIN_R = 30;
+
+float accelOver = 0;
+int lock = 0;
+float lockVal = 0;
 
 
 void setup() {
@@ -87,19 +92,17 @@ void setup() {
   
   //TCCR0B=0x02;
   //TCCR2B=0x02;
-  
-  test = 0;
-  
+  test=0;
 }
 
 void loop(){
   // initialize motors
-  int M1_1_S, M1_2_S, M2_1_S, M2_2_S, M3_1_S, M3_2_S, M4_1_S, M4_2_S, M5_1_S, M5_2_S, M6_1_S, M6_2_S;
+  float M1_1_S, M1_2_S, M2_1_S, M2_2_S, M3_1_S, M3_2_S, M4_1_S, M4_2_S, M5_1_S, M5_2_S, M6_1_S, M6_2_S;
   M1_1_S = M1_2_S = M2_1_S = M2_2_S = M3_1_S = M3_2_S = M4_1_S = M4_2_S = M5_1_S = M5_2_S = M6_1_S = M6_2_S = 0;
   
   // init/setup controls
-  int CR_RL_S, CR_UD_S, CL_UD_S, CL_RL_S, LT_S, RT_S;
-  CR_RL_S = CR_UD_S = CL_UD_S = CL_RL_S = LT_S = RT_S = 0;
+  int CR_RL_S, CR_UD_S, CL_UD_S, CL_RL_S, LT_S, RT_S, LB_S, RB_S, A_S, B_S;
+  CR_RL_S = CR_UD_S = CL_UD_S = CL_RL_S = LT_S = RT_S = LB_S = RB_S = A_S = B_S = 0;
   
   if (XboxConnected) {
     Usb.Task();
@@ -111,6 +114,12 @@ void loop(){
     
     LT_S = Xbox.getButton(L2);
     RT_S = Xbox.getButton(R2);
+    
+    LB_S = Xbox.getButton(L1);
+    RB_S = Xbox.getButton(R1);
+    
+    A_S = Xbox.getButton(A);
+    B_S = Xbox.getButton(B);
   }
   
   // init/set up accelerometer 
@@ -120,6 +129,41 @@ void loop(){
   XPIN_S = analogRead(xpin);
   YPIN_S = analogRead(ypin);
   ZPIN_S = analogRead(zpin);
+
+  //make value stay if press A button
+  if (RB_S)
+  {
+     accelOver = accelOver + .1;
+     if (accelOver > (2*PIN_R) ) XPIN_S = XPIN_L - 2*PIN_R;
+     else XPIN_S = XPIN_L - accelOver;
+  }
+  else if (LB_S)
+  {
+     accelOver = accelOver + .1;
+     if (accelOver > (2*PIN_R) ) XPIN_S = XPIN_L + 2*PIN_R; 
+     else XPIN_S = XPIN_L + accelOver;
+  }
+  else 
+  {
+     accelOver = 0; 
+  }
+  
+  
+  if (A_S)
+    {
+       lock = 1;
+       lockVal = XPIN_S;
+    }
+  else if (B_S)
+    {
+       lock = 0;
+       lockVal = 0;
+    }
+     
+  if (lock) XPIN_S = lockVal;
+  
+
+  
   
   /***********************start of new controls*****************************/
 
@@ -127,15 +171,15 @@ void loop(){
   if (CL_UD_S > 800)
   {
     // M1 REVERSE, M2 REVERSE
-     M1_1_S = M2_1_S = LOW;
-     M1_2_S = M2_2_S = map(CL_UD_S, 801, 32767, 0, 255);
+     M1_1_S = M2_1_S = map(CL_UD_S, 801, 32767, 0, 255);
+     M1_2_S = M2_2_S = LOW;
      dir = 1;
   }
   else if (CL_UD_S < -800)
   {
      // M1 FROWARD, M2 FORWARD
-     M1_1_S = M2_1_S = map(CL_UD_S, -801, -32768, 0, 255);
-     M1_2_S = M2_2_S = LOW;
+     M1_1_S = M2_1_S = LOW;
+     M1_2_S = M2_2_S = map(CL_UD_S, -801, -32768, 0, 255);
      dir = 2;
   }
 
@@ -253,32 +297,26 @@ void loop(){
   /***********************finish of test controls*****************************/
   
   /************************start of accelerometer controls********************/
-/* if(LT_S > 0)
-  {
-     M3_1_S = M4_1_S = M5_1_S = M6_1_S = LOW;
-     M3_2_S = M4_2_S = M5_2_S = M6_2_S = LT_S;
-  }
-  else if (RT_S > 0)
-  {
-     M3_1_S = M4_1_S = M5_1_S = M6_1_S = RT_S;
-     M3_2_S = M4_2_S = M5_2_S = M6_2_S = LOW;
+/* 
+  
   }*/
  
-  
+ ///* 
   temp=0;
-  if(XPIN_S < (XPIN_L-1))
+  mapped=0;
+  if(XPIN_S > (XPIN_L+1))
   {
-      temp=0;
-      M6_1_S = M5_1_S = map(XPIN_S, XPIN_L, (XPIN_L-PIN_R), 0, 255) / 2; //6 and 5 go down
-      M3_2_S = M4_2_S = map(XPIN_S, XPIN_L, (XPIN_L-PIN_R), 0, 255) / 2; //3 and 4 go up
+      temp=1;//?
+      M6_2_S = M5_2_S = map(XPIN_S, XPIN_L, (XPIN_L+PIN_R), 0, 255) / 2; //6 and 5 go down
+      M3_1_S = M4_1_S = map(XPIN_S, XPIN_L, (XPIN_L+PIN_R), 0, 255) / 2; //3 and 4 go up
   } 
-  else if (XPIN_S > (XPIN_L+1) )
+  else if (XPIN_S < (XPIN_L-1) )
   {
-      temp=1;
-      M6_2_S = M5_2_S = map(XPIN_S, XPIN_L, (XPIN_L-PIN_R), 0, 255) / 2; //6 and 5 go up
-      M3_1_S = M4_1_S = map(XPIN_S, XPIN_L, (XPIN_L-PIN_R), 0, 255) / 2; //3 and 4 go down
+      temp=2;//?
+      M6_1_S = M5_1_S = map(XPIN_S, XPIN_L, (XPIN_L-PIN_R), 0, 255) / 2; //6 and 5 go up
+      M3_2_S = M4_2_S = map(XPIN_S, XPIN_L, (XPIN_L-PIN_R), 0, 255) / 2; //3 and 4 go down
   }
-  
+  //*/
 //  if (YPIN_S < (YPIN_L-1) )
 //  {
 //      //3 AND 5 go down
@@ -298,96 +336,115 @@ void loop(){
 //      }
 //  }  
 
-
-  if( ZPIN_S < (ZPIN_L-1) )
+///*
+//ZPIN_S = 315;
+  if ( (RT_S==0) && (LT_S==0) )
+  {
+    if( ZPIN_S < (ZPIN_L) )
      {
-       //ROV SINKING, MOTORS FORWARD/UP?
-       RT_S = map(ZPIN_S, ZPIN_L, (ZPIN_L-100), 0, 255);
+       //ROV RISING, MOTORS reverse/down
+      // LT_S = map(ZPIN_S, ZPIN_L, (ZPIN_L-100), 0, 255);
      }
-     else if( ZPIN_S > (ZPIN_L+1) )
+     else if( ZPIN_S > (ZPIN_L) )
      {
-       //ROV RISING, MOTORS REVERSE/DOWN?
-       LT_S = map(ZPIN_S, ZPIN_L, (ZPIN_L+100), 0, 255);
+       //ROV SINKING, MOTORS forward/up
+      // RT_S = map(ZPIN_S, ZPIN_L, (ZPIN_L+100), 0, 255);
      }
-  
+  }
+  //*/
+// /*
   if(LT_S > 0)
   {
-    //goes DOWN
-    if(!temp)
+    //goes reverse/down more
+    if(temp==1)//6 and 5 reverse, 4 and 3 forward
     {
-         M6_1_S = M6_1_S + map(LT_S, 0, 255, 0, (255 - M6_1_S));
-         M5_1_S = M5_1_S + map(LT_S, 0, 255, 0, (255 - M5_1_S));
+         mapped= map(LT_S, 0, 255, 0, (255 - M6_2_S));
+         M6_2_S = M6_2_S + mapped;
+         M5_2_S = M5_2_S + mapped;//map(LT_S, 0, 255, 0, (255 - M5_2_S));
          
-         M4_2_S = M4_2_S - map(LT_S, 0, 255, 0, (255 - M6_1_S));
-         if (M4_2_S < 0)
+         M4_1_S = M4_1_S - mapped;//map(LT_S, 0, 255, 0, (255 - M6_2_S));//change when add y
+         if (M4_1_S < 0)
          {
-            M4_1_S = abs(M4_2_S);
-            M4_2_S = LOW; 
+            M4_2_S = abs(M4_1_S);
+            M4_1_S = LOW;  
          }
-         M3_2_S = M3_2_S - map(LT_S, 0, 255, 0, (255 - M5_1_S));
-         if (M3_2_S < 0)
+         M3_1_S = M3_1_S - mapped;//map(LT_S, 0, 255, 0, (255 - M5_2_S));
+         if (M3_1_S < 0)
          {
-            M3_1_S = abs(M3_2_S);
-            M3_2_S = LOW; 
+            M3_2_S = abs(M3_1_S);
+            M3_1_S = LOW; 
          }
     }
-    else
+    else if (temp==2)//4 and 3 reverse, 6 and 5 forward
     {
-         M4_1_S = M4_1_S + map(LT_S, 0, 255, 0, (255 - M4_1_S));
-         M3_1_S = M3_1_S + map(LT_S, 0, 255, 0, (255 - M3_1_S));
+         mapped = map(LT_S, 0, 255, 0, (255 - M4_2_S));
+         M4_2_S = M4_2_S + mapped;
+         M3_2_S = M3_2_S + mapped;
          
-         M6_2_S = M6_2_S - map(LT_S, 0, 255, 0, (255 - M4_1_S));
-         if (M6_2_S < 0)
-         {
-            M6_1_S = abs(M6_2_S);
-            M6_2_S = LOW; 
-         }
-         M5_2_S = M5_2_S - map(LT_S, 0, 255, 0, (255 - M3_1_S));
-         if (M5_2_S < 0)
-         {
-            M5_1_S = abs(M5_2_S);
-            M5_2_S = LOW; 
-         }
-    }
-  }
-  else if (RT_S > 0)
-  {
-    //goes UP
-    if(!temp)
-    {
-         M4_2_S = M4_2_S + map(LT_S, 0, 255, 0, (255 - M4_2_S));
-         M3_2_S = M3_2_S + map(LT_S, 0, 255, 0, (255 - M3_2_S));
-         
-         M6_1_S = M6_1_S - map(LT_S, 0, 255, 0, (255 - M4_2_S));
+         M6_1_S = M6_1_S - mapped;
          if (M6_1_S < 0)
          {
             M6_2_S = abs(M6_1_S);
             M6_1_S = LOW; 
          }
-         M5_1_S = M5_1_S - map(LT_S, 0, 255, 0, (255 - M3_2_S));
+         M5_1_S = M5_1_S - mapped;
          if (M5_1_S < 0)
          {
             M5_2_S = abs(M5_1_S);
             M5_1_S = LOW; 
          }
     }
-    else
+    else if (temp==0)
+    {  
+       M3_1_S = M4_1_S = M5_1_S = M6_1_S = LOW;
+       M3_2_S = M4_2_S = M5_2_S = M6_2_S = LT_S;
+    }
+  }
+  else if (RT_S > 0)
+  {
+    //goes forward/up more
+    if(temp==1)//6 and 5 reverse, 4 and 3 forward
     {
-         M6_2_S = M6_2_S + map(LT_S, 0, 255, 0, (255 - M6_2_S));
-         M5_2_S = M5_2_S + map(LT_S, 0, 255, 0, (255 - M5_2_S));
+         mapped = map(RT_S, 0, 255, 0, (255 - M4_1_S));
+         M4_1_S = M4_1_S + mapped;
+         M3_1_S = M3_1_S + mapped;
          
-         M4_1_S = M4_1_S - map(LT_S, 0, 255, 0, (255 - M6_2_S));
-         if (M4_1_S < 0)
+         M6_2_S = M6_2_S - mapped;
+         if (M6_2_S < 0)
          {
-            M4_2_S = abs(M4_1_S);
-            M4_1_S = LOW; 
+            M6_1_S = abs(M6_2_S);
+            M6_2_S = LOW; 
          }
-         M3_1_S = M3_1_S - map(LT_S, 0, 255, 0, (255 - M5_2_S));
-         if (M3_1_S < 0)
+         M5_2_S = M5_2_S - mapped;
+         if (M5_2_S < 0)
          {
-            M3_2_S = abs(M3_1_S);
-            M3_1_S = LOW; 
+            M5_1_S = abs(M5_2_S);
+            M5_2_S = LOW; 
+         }
+    }
+    else if (temp==2)//4 and 3 reverse, 6 and 5 forward
+    {
+         mapped = map(RT_S, 0, 255, 0, (255 - M6_1_S));
+         M6_1_S = M6_1_S + mapped;
+         M5_1_S = M5_1_S + mapped;
+         
+         M4_2_S = M4_2_S - mapped;
+         if (M4_2_S < 0)
+         {
+            M4_1_S = abs(M4_2_S);
+            M4_2_S = LOW; 
+         }
+         M3_2_S = M3_2_S - mapped;
+         if (M3_2_S < 0)
+         {
+            M3_1_S = abs(M3_2_S);
+            M3_2_S = LOW; 
          }  
+    }
+    else if (temp==0)
+    {
+      M3_1_S = M4_1_S = M5_1_S = M6_1_S = RT_S;
+      M3_2_S = M4_2_S = M5_2_S = M6_2_S = LOW;
     }
   }
   
@@ -403,7 +460,15 @@ void loop(){
      Serial.print(YPIN_S, DEC);
      Serial.print("\tZ=");
      Serial.print(ZPIN_S, DEC);
-     Serial.print("\n");
+     Serial.print("\n\n");
+     
+     Serial.print("RT_S=");
+     Serial.print(RT_S, DEC);
+     Serial.print("\tLT_S=");
+     Serial.print(LT_S, DEC);
+     Serial.print("\ttemp=");
+     Serial.print(temp, DEC);     
+     Serial.print("\n\n");
   
      Serial.print("M5_1_S=");
      Serial.print(M5_1_S, DEC);
@@ -489,7 +554,7 @@ void loop(){
   
   //delay(3000);
   */
-
+///*
   //Set Motor 1 
   analogWrite(M1_1, M1_1_S);
   analogWrite(M1_2, M1_2_S);
@@ -520,23 +585,23 @@ void loop(){
 //  analogWrite(M1_2, 0);   //Disengage the Brake for Channel A
   
   //Set Motor 2 test
-  analogWrite(2, 200);  //Establishes backward direction of Channel B
-  analogWrite(3, 0);   //Disengage the Brake for Channel B
+//  analogWrite(2, 200);  //Establishes backward direction of Channel B
+//  analogWrite(3, 0);   //Disengage the Brake for Channel B
   
   //Set Motor 1 test
-//  analogWrite(M3_1, 100); //Establishes forward direction of Channel A
-//  analogWrite(M3_2, 0);   //Disengage the Brake for Channel A
+  analogWrite(M3_1, 255); //Establishes forward direction of Channel A
+  analogWrite(M3_2, 0);   //Disengage the Brake for Channel A
   
     //Set Motor 1 test
-//  analogWrite(M4_1, 100); //Establishes forward direction of Channel A
-//  analogWrite(M4_2, 0);   //Disengage the Brake for Channel A
+  analogWrite(M4_1, 255); //Establishes forward direction of Channel A
+  analogWrite(M4_2, 0);   //Disengage the Brake for Channel A
   
     //Set Motor 1 test
-//  analogWrite(M5_1, 100); //Establishes forward direction of Channel A
-//  analogWrite(M5_2, 0);   //Disengage the Brake for Channel A
+  analogWrite(M5_1, 255); //Establishes forward direction of Channel A
+  analogWrite(M5_2, 0);   //Disengage the Brake for Channel A
   
     //Set Motor 1 test
-//  analogWrite(M6_1, 100); //Establishes forward direction of Channel A
-//  analogWrite(M6_2, 0);   //Disengage the Brake for Channel A
+  analogWrite(M6_1, 255); //Establishes forward direction of Channel A
+  analogWrite(M6_2, 0);   //Disengage the Brake for Channel A
 */
 }
