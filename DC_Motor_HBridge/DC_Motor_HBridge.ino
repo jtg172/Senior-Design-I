@@ -34,15 +34,17 @@ int dir;
 int temp;
 int mapped;
 
-const float XPIN_L = 621;//568
-const float YPIN_L = 480;
-const float ZPIN_L = 429;
+
+
+const float XPIN_L = 567;//568
+const float YPIN_L = 436;
+const float ZPIN_L = 388;
 const float PIN_R = 30;
 
 float accelOver = 0;
-int lock = 0;
-float lockVal = 0;
-
+int tilt = 0;
+int M_Val = 0;
+int time = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -78,19 +80,19 @@ void setup() {
   pinMode(ypin, INPUT);
   pinMode(zpin, INPUT);
   
-  //TCCR0B=0x02;
-  //TCCR2B=0x02;
   test=0;
 }
 
 void loop(){
   // initialize motors
-  int M1_F_S, M1_R_S, M2_F_S, M2_R_S, M34_U_S, M34_D_S, M56_U_S, M56_D_S;
+  float M1_F_S, M1_R_S, M2_F_S, M2_R_S, M34_U_S, M34_D_S, M56_U_S, M56_D_S;
   M1_F_S = M1_R_S = M2_F_S = M2_R_S = M34_U_S = M34_D_S = M56_U_S = M56_D_S = 0;
   
   // init/setup controls
-  int CR_RL_S, CR_UD_S, CL_UD_S, CL_RL_S, LT_S, RT_S, LB_S, RB_S, A_S, B_S;
-  CR_RL_S = CR_UD_S = CL_UD_S = CL_RL_S = LT_S = RT_S = LB_S = RB_S = A_S = B_S = 0;
+  int CR_RL_S, CR_UD_S, CL_UD_S, CL_RL_S, LT_S, RT_S, LB_S, RB_S, A_S, B_S, Y_S;
+  CR_RL_S = CR_UD_S = CL_UD_S = CL_RL_S = LT_S = RT_S = LB_S = RB_S = A_S = B_S = Y_S= 0;
+  
+  time = time +1;
   
   if (XboxConnected) {
     Usb.Task();
@@ -108,6 +110,7 @@ void loop(){
     
     A_S = Xbox.getButton(A);
     B_S = Xbox.getButton(B);
+    Y_S = Xbox.getButton(Y);
   }
   
   // init/set up accelerometer 
@@ -121,38 +124,65 @@ void loop(){
 //  YPIN_S = YPIN_L;
 //  ZPIN_S = ZPIN_L;
 
-  //make value stay if press A button
-  if (RB_S)
+
+if(time > 25)
+{
+  if (LB_S)
   {
-     accelOver = accelOver + .1;
-     if (accelOver > (2*PIN_R) ) XPIN_S = XPIN_L - 2*PIN_R;
-     else XPIN_S = XPIN_L - accelOver;
-  }
-  else if (LB_S)
+     accelOver = accelOver + 1;
+     tilt=1;
+   }
+  else if (RB_S)
   {
-     accelOver = accelOver + .1;
-     if (accelOver > (2*PIN_R) ) XPIN_S = XPIN_L + 2*PIN_R; 
-     else XPIN_S = XPIN_L + accelOver;
+     accelOver = accelOver - 1;
+     tilt=1;
   }
-  else 
+}  
+  if (tilt)
   {
-     accelOver = 0; 
+     if (accelOver > 20) accelOver=20;
+     XPIN_S = XPIN_L + accelOver;
+       
   }
-  
-  
-  if (A_S)
+
+ 
+  if (B_S)
     {
-       lock = 1;
-       lockVal = XPIN_S;
+      tilt=0; 
     }
-  else if (B_S)
-    {
-       lock = 0;
-       lockVal = 0;
-    }
-     
-  if (lock) XPIN_S = lockVal;
   
+//  //make value stay if press A button
+//  if (RB_S)
+//  {
+//     accelOver = accelOver + .1;
+//     if (accelOver > (2*PIN_R) ) XPIN_S = XPIN_L - 2*PIN_R;
+//     else XPIN_S = XPIN_L - accelOver;
+//  }
+//  else if (LB_S)
+//  {
+//     accelOver = accelOver + .1;
+//     if (accelOver > (2*PIN_R) ) XPIN_S = XPIN_L + 2*PIN_R; 
+//     else XPIN_S = XPIN_L + accelOver;
+//  }
+//  else
+//  {
+//     accelOver = 0; 
+//  }
+//  
+//  
+//  if (A_S)
+//    {
+//       lock = 1;
+//       lockVal = XPIN_S;
+//    }
+//  else if (B_S)
+//    {
+//       lock = 0;
+//       lockVal = 0;
+//    }
+//     
+//  if (lock) XPIN_S = lockVal;
+//  
 
   
   
@@ -292,21 +322,51 @@ void loop(){
   
   }*/
  
- ///* 
-  temp=0;
+ ///*
   mapped=0;
-  if(XPIN_S > (XPIN_L+2))
+  
+  if(time ==25)
   {
-      temp=1;//?
-      M56_D_S = map(XPIN_S, XPIN_L, (XPIN_L+PIN_R), 0, 255) / 2; //6 and 5 go down
-      M34_U_S = map(XPIN_S, XPIN_L, (XPIN_L+PIN_R), 0, 255) / 2; //3 and 4 go up
-  } 
-  else if (XPIN_S < (XPIN_L-2) )
-  {
-      temp=2;//?
-      M56_U_S = map(XPIN_S, XPIN_L, (XPIN_L-PIN_R), 0, 255) / 2; //6 and 5 go up
-      M34_D_S = map(XPIN_S, XPIN_L, (XPIN_L-PIN_R), 0, 255) / 2; //3 and 4 go down
+  time =0;
+      if(XPIN_S > (XPIN_L+3))
+      {
+        if(tilt)
+        {
+           M56_D_S = map(XPIN_S, XPIN_L, (XPIN_L+PIN_R), 0, 255) / 2; //6 and 5 go down
+           M34_U_S = map(XPIN_S, XPIN_L, (XPIN_L+PIN_R), 0, 255) / 2; //3 and 4 go up
+        }  
+        else if(M_Val < 200)
+        {
+          M_Val = M_Val+1;
+          if(M_Val < 0) M56_U_S = M34_D_S =  abs(M_Val); //3 and 4 go down  6 and 5 go up 
+          else M56_D_S = M34_U_S =  M_Val; //6 and 5 go down   3 and 4 go up
+        {
+      } 
+      else if (XPIN_S < (XPIN_L-3) )
+      {
+        if(tilt)
+        {
+          M56_U_S = map(XPIN_S, XPIN_L, (XPIN_L-PIN_R), 0, 255) / 2; //6 and 5 go up
+          M34_D_S = map(XPIN_S, XPIN_L, (XPIN_L-PIN_R), 0, 255) / 2; //3 and 4 go down
+        }
+        else if(M_Val > -200)
+        {
+          M_Val = M_Val -1;
+          if(M_Val < 0)M56_U_S = M34_D_S =  abs(M_Val); //3 and 4 go down  6 and 5 go up
+          else M56_D_S = M34_U_S =  M_Val; //6 and 5 go down   3 and 4 go up 
+        }
+      }else
+      {
+         if(M_Val>0)  M56_D_S = M34_U_S =  M_Val; //6 and 5 go down   3 and 4 go up
+         else if(M_Val<0) M56_U_S = M34_D_S =  abs(M_Val); //3 and 4 go down  6 and 5 go up
+      }
   }
+  else 
+  {
+      if(M_Val>0)  M56_D_S = M34_U_S =  M_Val; //6 and 5 go down   3 and 4 go up
+      else if(M_Val<0) M56_U_S = M34_D_S =  abs(M_Val); //3 and 4 go down  6 and 5 go up
+  }
+  
   //*/
 //  if (YPIN_S < (YPIN_L-1) )
 //  {
@@ -347,11 +407,11 @@ void loop(){
   if(LT_S > 0)
   {
     //goes reverse/down more
-    if(temp==1)//6 and 5 reverse, 4 and 3 forward
+    if(M_Val > 0)//6 and 5 down, 4 and 3 up
     {
          mapped= map(LT_S, 0, 255, 0, (255 - M56_D_S));
          M56_D_S = M56_D_S + mapped;
-         
+                  
          M34_U_S = M34_U_S - mapped;//map(LT_S, 0, 255, 0, (255 - M56_D_S));//change when add y
          if (M34_U_S < 0)
          {
@@ -359,7 +419,7 @@ void loop(){
             M34_U_S = LOW;  
          }
     }
-    else if (temp==2)//4 and 3 reverse, 6 and 5 forward
+    else if (M_Val < 0)//4 and 3 down, 6 and 5 up
     {
          mapped = map(LT_S, 0, 255, 0, (255 - M34_D_S));
          M34_D_S = M34_D_S + mapped;
@@ -371,7 +431,7 @@ void loop(){
             M56_U_S = LOW; 
          }
     }
-    else if (temp==0)
+    else if (M_Val == 0)
     {  
        M34_U_S = M56_U_S = LOW;
        M34_D_S = M56_D_S = LT_S;
@@ -380,7 +440,7 @@ void loop(){
   else if (RT_S > 0)
   {
     //goes forward/up more
-    if(temp==1)//6 and 5 reverse, 4 and 3 forward
+    if(M_Val > 0)//6 and 5 down, 4 and 3 up
     {
          mapped = map(RT_S, 0, 255, 0, (255 - M34_U_S));
          M34_U_S = M34_U_S + mapped;
@@ -392,7 +452,7 @@ void loop(){
             M56_D_S = LOW; 
          }
     }
-    else if (temp==2)//4 and 3 reverse, 6 and 5 forward
+    else if (M_Val < 0)//4 and 3 down, 6 and 5 up
     {
          mapped = map(RT_S, 0, 255, 0, (255 - M56_U_S));
          M56_U_S = M56_U_S + mapped;
@@ -404,7 +464,7 @@ void loop(){
             M34_D_S = LOW; 
          }
     }
-    else if (temp==0)
+    else if (M_Val == 0)
     {
       M34_U_S = M56_U_S = RT_S;
       M34_D_S = M56_D_S = LOW;
