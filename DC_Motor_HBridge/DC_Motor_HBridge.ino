@@ -273,7 +273,9 @@ void loop(){
  
   if (B_S)
   {
-     tilt=0; 
+     tilt=0;
+     accelOver=0;
+     M_Val=0; 
   }
   mapped=0;
   
@@ -305,7 +307,7 @@ void loop(){
               M_Val = M_Val+1;
               if(M_Val < 0) M56_U_S = M34_D_S =  abs(M_Val); //3 and 4 go down  6 and 5 go up 
               else M56_D_S = M34_U_S =  M_Val; //6 and 5 go down   3 and 4 go up
-          {
+          }
       } 
       else if (XPIN_S < (XPIN_L-3) )
       {
@@ -320,7 +322,8 @@ void loop(){
               if(M_Val < 0)M56_U_S = M34_D_S =  abs(M_Val); //3 and 4 go down  6 and 5 go up
               else M56_D_S = M34_U_S =  M_Val; //6 and 5 go down   3 and 4 go up 
           }
-      }else
+      }
+      else
       {
            if(M_Val>0)  M56_D_S = M34_U_S =  M_Val; //6 and 5 go down   3 and 4 go up
            else if(M_Val<0) M56_U_S = M34_D_S =  abs(M_Val); //3 and 4 go down  6 and 5 go up
