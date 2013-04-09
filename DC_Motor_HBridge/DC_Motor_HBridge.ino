@@ -124,66 +124,6 @@ void loop(){
 //  YPIN_S = YPIN_L;
 //  ZPIN_S = ZPIN_L;
 
-
-if(time > 25)
-{
-  if (LB_S)
-  {
-     accelOver = accelOver + 1;
-     tilt=1;
-   }
-  else if (RB_S)
-  {
-     accelOver = accelOver - 1;
-     tilt=1;
-  }
-}  
-  if (tilt)
-  {
-     if (accelOver > 20) accelOver=20;
-     XPIN_S = XPIN_L + accelOver;
-       
-  }
-
- 
-  if (B_S)
-    {
-      tilt=0; 
-    }
-  
-//  //make value stay if press A button
-//  if (RB_S)
-//  {
-//     accelOver = accelOver + .1;
-//     if (accelOver > (2*PIN_R) ) XPIN_S = XPIN_L - 2*PIN_R;
-//     else XPIN_S = XPIN_L - accelOver;
-//  }
-//  else if (LB_S)
-//  {
-//     accelOver = accelOver + .1;
-//     if (accelOver > (2*PIN_R) ) XPIN_S = XPIN_L + 2*PIN_R; 
-//     else XPIN_S = XPIN_L + accelOver;
-//  }
-//  else
-//  {
-//     accelOver = 0; 
-//  }
-//  
-//  
-//  if (A_S)
-//    {
-//       lock = 1;
-//       lockVal = XPIN_S;
-//    }
-//  else if (B_S)
-//    {
-//       lock = 0;
-//       lockVal = 0;
-//    }
-//     
-//  if (lock) XPIN_S = lockVal;
-//  
-
   
   
   /***********************start of new controls*****************************/
@@ -323,42 +263,67 @@ if(time > 25)
   }*/
  
  ///*
+  if (tilt)
+  {
+     if (accelOver < -200) accelOver=-200;
+     if (accelOver > 200) accelOver=200;
+     M_Val =accelOver;
+  }
+
+ 
+  if (B_S)
+  {
+     tilt=0; 
+  }
   mapped=0;
   
   if(time ==25)
   {
   time =0;
+ 
+      if (LB_S)
+      {
+         accelOver = accelOver + 1;
+         tilt=1;
+      }
+      else if (RB_S)
+      {
+         accelOver = accelOver - 1;
+         tilt=1;
+      }
+      
+ 
       if(XPIN_S > (XPIN_L+3))
       {
-        if(tilt)
-        {
-           M56_D_S = map(XPIN_S, XPIN_L, (XPIN_L+PIN_R), 0, 255) / 2; //6 and 5 go down
-           M34_U_S = map(XPIN_S, XPIN_L, (XPIN_L+PIN_R), 0, 255) / 2; //3 and 4 go up
-        }  
-        else if(M_Val < 200)
-        {
-          M_Val = M_Val+1;
-          if(M_Val < 0) M56_U_S = M34_D_S =  abs(M_Val); //3 and 4 go down  6 and 5 go up 
-          else M56_D_S = M34_U_S =  M_Val; //6 and 5 go down   3 and 4 go up
-        {
+          if(tilt)
+          {
+              if(M_Val < 0) M56_U_S = M34_D_S =  abs(M_Val); //3 and 4 go down  6 and 5 go up 
+              else M56_D_S = M34_U_S =  M_Val; //6 and 5 go down   3 and 4 go up
+          }  
+          else if(M_Val < 200)
+          {
+              M_Val = M_Val+1;
+              if(M_Val < 0) M56_U_S = M34_D_S =  abs(M_Val); //3 and 4 go down  6 and 5 go up 
+              else M56_D_S = M34_U_S =  M_Val; //6 and 5 go down   3 and 4 go up
+          {
       } 
       else if (XPIN_S < (XPIN_L-3) )
       {
-        if(tilt)
-        {
-          M56_U_S = map(XPIN_S, XPIN_L, (XPIN_L-PIN_R), 0, 255) / 2; //6 and 5 go up
-          M34_D_S = map(XPIN_S, XPIN_L, (XPIN_L-PIN_R), 0, 255) / 2; //3 and 4 go down
-        }
-        else if(M_Val > -200)
-        {
-          M_Val = M_Val -1;
-          if(M_Val < 0)M56_U_S = M34_D_S =  abs(M_Val); //3 and 4 go down  6 and 5 go up
-          else M56_D_S = M34_U_S =  M_Val; //6 and 5 go down   3 and 4 go up 
-        }
+          if(tilt)
+          {
+              if(M_Val < 0)M56_U_S = M34_D_S =  abs(M_Val); //3 and 4 go down  6 and 5 go up
+              else M56_D_S = M34_U_S =  M_Val; //6 and 5 go down   3 and 4 go up 
+          }
+          else if(M_Val > -200)
+          {
+              M_Val = M_Val -1;
+              if(M_Val < 0)M56_U_S = M34_D_S =  abs(M_Val); //3 and 4 go down  6 and 5 go up
+              else M56_D_S = M34_U_S =  M_Val; //6 and 5 go down   3 and 4 go up 
+          }
       }else
       {
-         if(M_Val>0)  M56_D_S = M34_U_S =  M_Val; //6 and 5 go down   3 and 4 go up
-         else if(M_Val<0) M56_U_S = M34_D_S =  abs(M_Val); //3 and 4 go down  6 and 5 go up
+           if(M_Val>0)  M56_D_S = M34_U_S =  M_Val; //6 and 5 go down   3 and 4 go up
+           else if(M_Val<0) M56_U_S = M34_D_S =  abs(M_Val); //3 and 4 go down  6 and 5 go up
       }
   }
   else 
