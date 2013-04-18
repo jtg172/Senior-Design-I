@@ -36,15 +36,17 @@ int mapped;
 
 
 
-const float XPIN_L = 567;//568
-const float YPIN_L = 436;
-const float ZPIN_L = 388;
+const float XPIN_L = 626;//568
+const float YPIN_L = 460;
+const float ZPIN_L = 425;
 const float PIN_R = 30;
 
 float accelOver = 0;
 int tilt = 0;
 int M_Val = 0;
 int time = 0;
+int tLock = 0;
+int tLock_bool = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -199,77 +201,13 @@ void loop(){
       }
   } 
   /***********************finish of new controls***********************************/
-  /***********************start of old controls*****************************//*  
-  if(CR_UD_S > 800)
-  {
-     // M1 FROWARD, M2 FORWARD
-     M1_F_S = M2_F_S = map(CR_UD_S, 801, 32767, 0, 255);
-     M1_R_S = M2_R_S = LOW;
-
-  } 
-  else if( CR_UD_S < (-800) )
-  {
-     //M1 REVERSE, M2 REVERSE
-     M1_F_S = M2_F_S = LOW;
-     M1_R_S = M2_R_S = map(CR_UD_S, -799, -32768, 0, 255);
-  }
-
-  if(CR_RL_S > 800)
-  {
-     //M1 FORWARD, M2 REVERSE
-     M1_F_S = M2_R_S = LOW;
-     M1_R_S = M2_F_S = map(CR_RL_S, 801, 32767, 0, 255);
-  }
-  else if(CR_RL_S < (-800) )
-  {
-     //M1 REVERSE, M2 FORWARD
-     M1_F_S = M2_R_S = map(CR_RL_S, -799, -32768, 0, 255);
-     M1_R_S = M2_F_S = LOW;
-  }
-  /***********************finish of old controls*****************************/
-  /***********************start of test controls*****************************//*
-  if(CL_UD_S > 800)
-  {
-     // M1 FORWARD
-     M1_F_S = map(CL_UD_S, 801, 32768, 0, 255);
-     M1_R_S = LOW;
-
-  } 
-  else if( CL_UD_S < (-800) )
-  {
-     //M1 REVERSE
-     M1_F_S = LOW;
-     M1_R_S = map(CL_UD_S, -801, -32769, 0, 255);
-  }
-
-  if(CR_UD_S > 800)
-  {
-     // M2 FORWARD
-     M2_F_S = map(CR_UD_S, 801, 32768, 0, 255);
-     M2_R_S = LOW;
-
-  } 
-  else if( CR_UD_S < (-800) )
-  {
-     //M2 REVERSE
-     M2_F_S = LOW;
-     M2_R_S = map(CR_UD_S, -801, -32769, 0, 255);
-  }
-  /***********************finish of test controls*****************************/
   
-  /************************start of accelerometer controls********************/
-/* 
-  
-  }*/
- 
- ///*
   if (tilt)
   {
-     if (accelOver < -200) accelOver=-200;
-     if (accelOver > 200) accelOver=200;
+     if (accelOver < -180) accelOver=-180;
+     if (accelOver > 180) accelOver=180;
      M_Val =accelOver;
   }
-
  
   if (B_S)
   {
@@ -277,7 +215,7 @@ void loop(){
      accelOver=0;
      M_Val=0; 
   }
-  mapped=0;
+  
   
   if(time ==25)
   {
@@ -285,38 +223,38 @@ void loop(){
  
       if (LB_S)
       {
-         accelOver = accelOver + 1;
+         accelOver = accelOver + 2;
          tilt=1;
       }
       else if (RB_S)
       {
-         accelOver = accelOver - 1;
+         accelOver = accelOver - 2;
          tilt=1;
       }
       
  
-      if(XPIN_S > (XPIN_L+3))
+      if(XPIN_S > (XPIN_L+7))
       {
           if(tilt)
           {
               if(M_Val < 0) M56_U_S = M34_D_S =  abs(M_Val); //3 and 4 go down  6 and 5 go up 
               else M56_D_S = M34_U_S =  M_Val; //6 and 5 go down   3 and 4 go up
           }  
-          else if(M_Val < 200)
+          else if(M_Val < 150)
           {
               M_Val = M_Val+1;
               if(M_Val < 0) M56_U_S = M34_D_S =  abs(M_Val); //3 and 4 go down  6 and 5 go up 
               else M56_D_S = M34_U_S =  M_Val; //6 and 5 go down   3 and 4 go up
           }
       } 
-      else if (XPIN_S < (XPIN_L-3) )
+      else if (XPIN_S < (XPIN_L-7) )
       {
           if(tilt)
           {
               if(M_Val < 0)M56_U_S = M34_D_S =  abs(M_Val); //3 and 4 go down  6 and 5 go up
               else M56_D_S = M34_U_S =  M_Val; //6 and 5 go down   3 and 4 go up 
           }
-          else if(M_Val > -200)
+          else if(M_Val > -150)
           {
               M_Val = M_Val -1;
               if(M_Val < 0)M56_U_S = M34_D_S =  abs(M_Val); //3 and 4 go down  6 and 5 go up
@@ -355,23 +293,43 @@ void loop(){
 //      }
 //  }  
 
-///*
-//ZPIN_S = 315;
+if (A_S)
+{
+   tLock = LT_S;
+   tLock_bool = 1;  
+}
+
+if (Y_S)
+{
+   tLock_bool = 0;
+   tLock = 0; 
+}
+
+if (tLock_bool)
+{
+   LT_S = tLock; 
+}
+
+
+
+
+////ZPIN_S = 315;
 //  if ( (RT_S==0) && (LT_S==0) )
 //  {
 //    if( ZPIN_S < (ZPIN_L) )
 //     {
-//       //ROV RISING, MOTORS reverse/down
-//      // LT_S = map(ZPIN_S, ZPIN_L, (ZPIN_L-100), 0, 255);
+//       //ROV SINKING, MOTORS forward/up
+//       LT_S = map(ZPIN_S, ZPIN_L, (ZPIN_L-3), 0, 255);
 //     }
 //     else if( ZPIN_S > (ZPIN_L) )
 //     {
-//       //ROV SINKING, MOTORS forward/up
-//      // RT_S = map(ZPIN_S, ZPIN_L, (ZPIN_L+100), 0, 255);
+//       //ROV RISING, MOTORS reverse/down
+//       RT_S = map(ZPIN_S, ZPIN_L, (ZPIN_L+3), 0, 255);
 //     }
 //  }
-  //*/
-// /*
+
+
+  mapped=0;
   if(LT_S > 0)
   {
     //goes reverse/down more
@@ -442,7 +400,7 @@ void loop(){
   /***************************END ACCELEROMETER*****************************/    
  
  
-   if (test == 3000)
+   if (test == 1000)
    {
      // print the sensor values:
      Serial.print("X=");
@@ -458,7 +416,9 @@ void loop(){
      Serial.print("\tLT_S=");
      Serial.print(LT_S, DEC);
      Serial.print("\ttemp=");
-     Serial.print(temp, DEC);     
+     Serial.print(temp, DEC);
+     Serial.print("\taccelOver=");
+     Serial.print(accelOver, DEC);    
      Serial.print("\n\n");
   
      Serial.print("M56_U_S=");
