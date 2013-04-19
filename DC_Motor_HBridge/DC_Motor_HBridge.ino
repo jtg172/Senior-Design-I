@@ -36,7 +36,7 @@ int mapped;
 
 
 
-const float XPIN_L = 626;//568
+const float XPIN_L = 610;//568
 const float YPIN_L = 460;
 const float ZPIN_L = 425;
 const float PIN_R = 30;
@@ -83,6 +83,11 @@ void setup() {
   pinMode(zpin, INPUT);
   
   test=0;
+  TCCR0B=(TCCR0B & 0xF8) | 0x01;
+  //TCCR1B=0x01;
+  TCCR2B=(TCCR2B & 0xF8) | 0x01;
+  TCCR3B=(TCCR3B & 0xF8) | 0x01;
+  TCCR4B=(TCCR4B & 0xF8) | 0x01;
 }
 
 void loop(){
@@ -233,7 +238,7 @@ void loop(){
       }
       
  
-      if(XPIN_S > (XPIN_L+7))
+      if(XPIN_S > (XPIN_L+12))
       {
           if(tilt)
           {
@@ -247,7 +252,7 @@ void loop(){
               else M56_D_S = M34_U_S =  M_Val; //6 and 5 go down   3 and 4 go up
           }
       } 
-      else if (XPIN_S < (XPIN_L-7) )
+      else if (XPIN_S < (XPIN_L-12) )
       {
           if(tilt)
           {
